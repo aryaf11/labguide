@@ -1,0 +1,3696 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>LabGuide UI</title>
+    <style>
+      :root {
+        --bg: #031a37;
+        --card: #0e2443;
+        --card-soft: #f0f2f5;
+        --accent: #35d0b0;
+        --text: #ffffff;
+        --text-dim: #c0cad7;
+        --blue-soft: #1a62d4;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      }
+
+      html {
+        height: 100%;
+        min-height: 100vh;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: radial-gradient(ellipse 120% 80% at 50% 20%, #3d4a5c 0%, #0f1318 55%, #07090c 100%);
+        color: #0f172a;
+        padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+          max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .device-frame {
+        width: calc(100vw - 32px);
+        max-width: 390px;
+        padding: 10px 10px 14px;
+        background: linear-gradient(160deg, #252a32 0%, #12151a 45%, #0a0c0f 100%);
+        border-radius: 40px;
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.07) inset,
+          0 32px 64px rgba(0, 0, 0, 0.55),
+          0 8px 24px rgba(0, 0, 0, 0.35);
+        flex-shrink: 0;
+      }
+
+      .device-notch-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 4px 0 10px;
+        min-height: 28px;
+      }
+
+      .device-camera {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #2a3440, #0a0d12);
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4) inset;
+      }
+
+      .device-speaker {
+        width: 56px;
+        height: 6px;
+        border-radius: 4px;
+        background: #0a0a0c;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+      }
+
+      .device-screen {
+        border-radius: 28px;
+        overflow: hidden;
+        background: #000;
+        height: 82vh;
+        max-height: 720px;
+        min-height: 420px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35) inset;
+      }
+
+      @supports (height: 1dvh) {
+        .device-screen {
+          height: min(82dvh, 720px);
+        }
+      }
+
+      .device-home-indicator {
+        flex-shrink: 0;
+        width: 112px;
+        height: 4px;
+        margin: 6px auto 2px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .app-screens {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app-screens > .phone:not(.is-active) {
+        display: none !important;
+      }
+
+      .app-screens > .phone.is-active {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+      }
+
+      .app-screens > .phone.splash.is-active {
+        justify-content: center;
+      }
+
+      .app-screens > .phone.success.is-active {
+        align-items: center;
+        justify-content: center;
+      }
+
+      .device-screen .phone {
+        height: auto;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+
+      .nav-back,
+      .ar-back {
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .item[data-screen-go],
+      .lab-card[data-screen-go],
+      .option[data-screen-go],
+      .btn-splash-continue {
+        cursor: pointer;
+      }
+
+      .btn-splash-continue {
+        touch-action: manipulation;
+        position: relative;
+        z-index: 2;
+        pointer-events: auto;
+      }
+
+      .item:not([data-screen-go]) {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
+
+      .ar-next-fab {
+        position: absolute;
+        bottom: 88px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 4;
+        border: none;
+        border-radius: 999px;
+        padding: 8px 16px;
+        font-size: 12px;
+        font-weight: 700;
+        background: rgba(15, 23, 42, 0.85);
+        color: #e0f2fe;
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        cursor: pointer;
+        pointer-events: auto;
+      }
+
+      .ar-done-fab {
+        position: absolute;
+        bottom: 88px;
+        right: 10px;
+        z-index: 4;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #0d9488;
+        color: #fff;
+        cursor: pointer;
+        pointer-events: auto;
+      }
+
+      .phone {
+        height: 470px;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+        position: relative;
+        background: #e8edf5;
+        border: 1px solid #c5d0e0;
+      }
+
+      .screen-top {
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 16px 10px;
+        font-size: 15px;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        background: rgba(255, 255, 255, 0.75);
+      }
+
+      .splash .screen-top,
+      .success .screen-top {
+        color: #fff;
+        border-bottom: none;
+        background: transparent;
+      }
+
+      .title {
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 22px;
+      }
+
+      .subtitle {
+        color: #475569;
+        font-size: 16px;
+      }
+
+      .splash {
+        background: radial-gradient(circle at 70% 20%, #0a4f6f 0%, #062f4a 55%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #0a3a52;
+      }
+
+      .center-box {
+        text-align: center;
+        color: #fff;
+      }
+
+      .splash .title {
+        color: #fff;
+      }
+
+      .splash .subtitle {
+        color: var(--text-dim);
+      }
+
+      .logo {
+        width: 88px;
+        height: 88px;
+        border-radius: 20px;
+        border: 2px solid #4ed9c8;
+        margin: 0 auto 12px;
+        display: grid;
+        place-items: center;
+        color: #4ed9c8;
+        font-size: 40px;
+      }
+
+      .dots {
+        margin-top: 18px;
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #597897;
+      }
+
+      .dot.active {
+        background: #59d4c6;
+      }
+
+      .body {
+        padding: 12px;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        color: #1e293b;
+        background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      }
+
+      .splash .body,
+      .success .body {
+        background: transparent;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      section[data-screen="devices"] .body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      section[data-screen="devices"] .body .list#devicesListRoot {
+        width: 100%;
+        min-height: 160px;
+        flex: 1 1 auto;
+      }
+
+      .item {
+        background: var(--card-soft);
+        border: 1px solid #e4e8ee;
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        color: #1b2b44;
+      }
+
+      .icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: #dce6f6;
+        display: grid;
+        place-items: center;
+        color: #355ea3;
+      }
+
+      .lab-card {
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+      }
+
+      .thumb {
+        position: relative;
+        height: 118px;
+        border-radius: 10px;
+        background: #f1f5f9;
+        border: 1px solid #94a3b8;
+        overflow: hidden;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      }
+
+      /* قائمة الأجهزة: بدون WebGL هنا لتفادي حد سياقات WebGL على الجوال */
+      .thumb.thumb--list-placeholder {
+        display: grid;
+        place-items: center;
+        background: linear-gradient(145deg, #e8eef5 0%, #dce7f2 100%);
+      }
+
+      .thumb.thumb--list-placeholder::after {
+        content: "⚙";
+        font-size: 44px;
+        line-height: 1;
+        opacity: 0.45;
+      }
+
+      .thumb.thumb--device-thumb {
+        display: block;
+        background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+      }
+
+      .thumb.thumb--device-thumb .thumb-img {
+        display: block;
+        width: 100%;
+        height: 118px;
+        object-fit: contain;
+        padding: 10px;
+        box-sizing: border-box;
+        pointer-events: none;
+        -webkit-user-drag: none;
+      }
+
+      .item[data-screen-go],
+      .lab-card[data-screen-go],
+      .option[data-screen-go],
+      .btn-splash-continue {
+        touch-action: manipulation;
+      }
+
+      .thumb canvas {
+        display: block;
+        width: 100%;
+        height: 118px;
+      }
+
+      .label {
+        margin-top: 8px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .muted {
+        color: #64748b;
+        font-size: 13px;
+        text-align: center;
+      }
+
+      .option {
+        border-radius: 12px;
+        padding: 16px;
+        color: #fff;
+        margin-bottom: 12px;
+        min-height: 118px;
+        display: flex;
+        align-items: flex-end;
+        font-weight: 700;
+      }
+
+      .option.one {
+        background: linear-gradient(160deg, #3a9688, #2f6f72);
+      }
+
+      .option.two {
+        background: linear-gradient(160deg, #1f3768, #102145);
+      }
+
+      .step-screen {
+        background: linear-gradient(180deg, #e2e8f0, #cbd5e1);
+        border: 1px solid #94a3b8;
+      }
+
+      .machine {
+        margin: 6px 10px 8px;
+        height: 210px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid #64748b;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+      }
+
+      .machine canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .machine-stack {
+        margin: 6px 10px 8px;
+        flex-shrink: 0;
+      }
+
+      .machine-stack .machine {
+        margin: 0;
+      }
+
+      .lab-sim-panel,
+      .multimeter-panel {
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid #475569;
+        color: #e2e8f0;
+        font-size: 13px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+      }
+
+      .lab-sim-panel.is-hidden,
+      .multimeter-panel.is-hidden {
+        display: none !important;
+      }
+
+      .lab-sim-panel .mm-panel-head,
+      .multimeter-panel .mm-panel-head {
+        font-weight: 700;
+        font-size: 12px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+
+      .lab-sim-panel .mm-lcd,
+      .multimeter-panel .mm-lcd {
+        font-family: ui-monospace, Consolas, monospace;
+        background: #0c4a3e;
+        border-radius: 8px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 6px;
+        border: 2px inset rgba(0, 0, 0, 0.35);
+        min-height: 44px;
+      }
+
+      .lab-sim-panel .mm-lcd-main,
+      .multimeter-panel .mm-lcd-main {
+        font-size: 26px;
+        letter-spacing: 0.06em;
+        color: #6ee7b7;
+        text-shadow: 0 0 8px rgba(110, 231, 183, 0.35);
+      }
+
+      .lab-sim-panel .mm-lcd-unit,
+      .multimeter-panel .mm-lcd-unit {
+        font-size: 14px;
+        color: #34d399;
+      }
+
+      .lab-sim-panel .mm-mode-row,
+      .multimeter-panel .mm-mode-row {
+        margin-top: 8px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .lab-sim-panel .mm-mode-val,
+      .multimeter-panel .mm-mode-val {
+        color: #fbbf24;
+      }
+
+      .lab-sim-panel .mm-probes,
+      .lab-sim-panel .lab-sim-actions,
+      .multimeter-panel .mm-probes {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .lab-sim-panel .mm-probe,
+      .lab-sim-panel .lab-act-btn,
+      .multimeter-panel .mm-probe {
+        flex: 1;
+        border: none;
+        border-radius: 10px;
+        padding: 8px;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .lab-sim-panel .mm-probe-red,
+      .lab-sim-panel .lab-act-btn--accent,
+      .multimeter-panel .mm-probe-red {
+        background: linear-gradient(180deg, #fecaca, #dc2626);
+        color: #fff;
+      }
+
+      .lab-sim-panel .mm-probe-red.is-on,
+      .lab-sim-panel .lab-act-btn--accent.is-on,
+      .multimeter-panel .mm-probe-red.is-on {
+        outline: 2px solid #fff;
+      }
+
+      .lab-sim-panel .mm-probe-black,
+      .lab-sim-panel .lab-act-btn--muted,
+      .multimeter-panel .mm-probe-black {
+        background: linear-gradient(180deg, #cbd5e1, #334155);
+        color: #fff;
+      }
+
+      .lab-sim-panel .mm-probe-black.is-on,
+      .lab-sim-panel .lab-act-btn--muted.is-on,
+      .multimeter-panel .mm-probe-black.is-on {
+        outline: 2px solid #fff;
+      }
+
+      .lab-sim-panel .mm-hint,
+      .multimeter-panel .mm-hint {
+        margin: 8px 0 0;
+        font-size: 11px;
+        color: #64748b;
+        text-align: center;
+        line-height: 1.35;
+      }
+
+      .lab-power-row {
+        margin-top: 8px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .lab-power-btn {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 2px solid #64748b;
+        background: #334155;
+        color: #e2e8f0;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 11px;
+      }
+
+      .lab-power-btn.is-on {
+        background: #14532d;
+        border-color: #22c55e;
+        color: #f0fdf4;
+      }
+
+      .lab-jack-board {
+        margin-top: 10px;
+        padding: 8px;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid #475569;
+      }
+
+      .lab-jack-hint {
+        font-size: 10px;
+        color: #94a3b8;
+        margin: 0 0 8px;
+        text-align: center;
+        line-height: 1.35;
+      }
+
+      .lab-jack-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+
+      .lab-jack-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .lab-jack-label {
+        font-size: 10px;
+        color: #cbd5e1;
+        flex: 0 0 auto;
+        min-width: 76px;
+      }
+
+      .lab-jack {
+        flex: 1;
+        min-width: 48px;
+        padding: 8px 4px;
+        border-radius: 8px;
+        border: 2px dashed #64748b;
+        background: #1e293b;
+        color: #e2e8f0;
+        font-weight: 700;
+        font-size: 11px;
+        cursor: pointer;
+      }
+
+      .lab-jack.lab-jack-plug-black {
+        outline: 3px solid #cbd5e1;
+        border-style: solid;
+        background: #334155;
+      }
+
+      .lab-jack.lab-jack-plug-red {
+        outline: 3px solid #f87171;
+        border-style: solid;
+        background: #422020;
+      }
+
+      .lab-sim-status {
+        margin-top: 8px;
+        font-size: 10px;
+        color: #94a3b8;
+        text-align: center;
+        min-height: 2.8em;
+        line-height: 1.4;
+      }
+
+      .webgl-fallback-msg {
+        height: 100%;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 16px 14px;
+        font-size: 14px;
+        line-height: 1.45;
+        color: #334155;
+        background: linear-gradient(180deg, #eef4fb 0%, #e2e8f0 100%);
+      }
+
+      .webgl-fallback-msg p {
+        margin: 0 0 8px;
+      }
+
+      .step-panel {
+        margin: 0 10px;
+        border: 1px solid #94a3b8;
+        border-radius: 14px;
+        padding: 10px 12px;
+        color: #1e293b;
+        background: #ffffff;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+      }
+
+      .bottom-nav {
+        position: absolute;
+        bottom: 12px;
+        left: 10px;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        flex: 1;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .btn.ghost {
+        background: #e2e8f0;
+        color: #1e293b;
+        border: 1px solid #94a3b8;
+      }
+
+      .splash .btn.ghost,
+      .success .btn.ghost {
+        background: rgba(15, 23, 42, 0.25);
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+      }
+
+      .btn.primary {
+        background: var(--accent);
+        color: #063036;
+      }
+
+      .success {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, #ccfbf1, #99f6e4);
+        border: 1px solid #5eead4;
+      }
+
+      .success-card {
+        text-align: center;
+        color: #0f172a;
+        padding: 16px;
+      }
+
+      .success-card .title {
+        color: #0f766e;
+      }
+
+      .success-card .subtitle {
+        color: #115e59;
+      }
+
+      .check {
+        width: 110px;
+        height: 110px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        background: #4dd3bf;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 54px;
+        font-weight: 900;
+      }
+
+      .button-stack {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .device-notes {
+        margin-top: 8px;
+        padding: 8px 10px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        font-size: 12px;
+        color: #475569;
+        line-height: 1.45;
+        text-align: right;
+      }
+
+      .device-notes strong {
+        display: block;
+        color: #1e3a5f;
+        font-size: 11px;
+        margin-bottom: 4px;
+      }
+
+      .ar-explainer {
+        margin-top: 14px;
+        padding: 12px;
+        background: #ffffff;
+        border: 1px solid #94a3b8;
+        border-radius: 12px;
+        color: #334155;
+        font-size: 13px;
+        line-height: 1.55;
+        text-align: right;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+      }
+
+      .ar-explainer h3 {
+        margin: 0 0 6px;
+        font-size: 14px;
+        color: #0d9488;
+      }
+
+      .step-notes {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+        font-size: 12px;
+        color: #475569;
+        line-height: 1.5;
+        text-align: right;
+      }
+
+      .step-notes::before {
+        content: "ملاحظات على الجهاز: ";
+        color: #0d9488;
+        font-weight: 700;
+      }
+
+      /* —— واجهة AR (كاميرا + طبقة رقمية) —— */
+      /* لا تضع display:flex هنا — يكسر إخفاء الشاشات غير النشطة */
+      .app-screens > .phone.ar-interface.is-active {
+        flex: 1;
+        min-height: 0;
+        padding: 0;
+        background: #1e1e1e;
+        border-color: #3f3f46;
+      }
+
+      .ar-topbar {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: #2d2d30;
+        color: #fafafa;
+        font-size: 14px;
+        border-bottom: 1px solid #18181b;
+      }
+
+      .ar-topbar strong {
+        font-weight: 700;
+        font-size: 13px;
+        text-align: center;
+        flex: 1;
+        padding: 0 6px;
+      }
+
+      .ar-back {
+        opacity: 0.9;
+        font-size: 22px;
+        line-height: 1;
+        cursor: default;
+      }
+
+      .ar-star-wrap {
+        position: relative;
+        font-size: 18px;
+        opacity: 0.95;
+      }
+
+      .ar-badge {
+        position: absolute;
+        top: -6px;
+        left: -4px;
+        min-width: 14px;
+        height: 14px;
+        padding: 0 3px;
+        border-radius: 999px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 9px;
+        font-weight: 800;
+        display: grid;
+        place-items: center;
+        line-height: 1;
+      }
+
+      .ar-subbar {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 12px;
+        background: #3f3f46;
+        color: #e4e4e7;
+        font-size: 12px;
+      }
+
+      .ar-tools-btn {
+        border: 1px solid #71717a;
+        background: #52525b;
+        color: #fafafa;
+        border-radius: 8px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .ar-viewport {
+        flex: 1;
+        position: relative;
+        min-height: 0;
+        background: #0a0a0a;
+      }
+
+      .ar-feed {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+      }
+
+      .ar-feed.is-hidden {
+        display: none;
+      }
+
+      .ar-feed-fallback {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(ellipse 120% 80% at 50% 55%, #3d3835 0%, #1c1917 42%, #0c0a09 100%);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+      }
+
+      .ar-feed-fallback.is-visible {
+        opacity: 1;
+        z-index: 1;
+      }
+
+      .ar-feed-fallback::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        transform: translate(-50%, -50%);
+        width: 72%;
+        height: 38%;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #57534e 0%, #44403c 40%, #292524 100%);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+      }
+
+      .ar-feed-fallback::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 46%;
+        transform: translate(-50%, -50%);
+        width: 42%;
+        height: 22%;
+        border-radius: 6px;
+        background: #0a1f14;
+        border: 3px solid #1a2e22;
+        box-shadow: inset 0 0 20px rgba(0, 255, 120, 0.08);
+        background-image: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(52, 211, 153, 0.15) 50%,
+          transparent 100%
+        );
+      }
+
+      .ar-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .ar-track-rect {
+        position: absolute;
+        left: 10%;
+        top: 18%;
+        width: 80%;
+        height: 58%;
+        border: 2px solid rgba(125, 211, 252, 0.75);
+        border-radius: 10px;
+        box-shadow:
+          0 0 20px rgba(56, 189, 248, 0.15),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        animation: ar-pulse 2.8s ease-in-out infinite;
+      }
+
+      @keyframes ar-pulse {
+        0%,
+        100% {
+          border-color: rgba(125, 211, 252, 0.65);
+        }
+        50% {
+          border-color: rgba(56, 189, 248, 0.95);
+        }
+      }
+
+      .ar-br {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        border: 3px solid #7dd3fc;
+        box-sizing: border-box;
+      }
+
+      .ar-br--tl {
+        top: -3px;
+        left: -3px;
+        border-right: none;
+        border-bottom: none;
+        border-radius: 6px 0 0 0;
+      }
+
+      .ar-br--tr {
+        top: -3px;
+        right: -3px;
+        border-left: none;
+        border-bottom: none;
+        border-radius: 0 6px 0 0;
+      }
+
+      .ar-br--bl {
+        bottom: -3px;
+        left: -3px;
+        border-right: none;
+        border-top: none;
+        border-radius: 0 0 0 6px;
+      }
+
+      .ar-br--br {
+        bottom: -3px;
+        right: -3px;
+        border-left: none;
+        border-top: none;
+        border-radius: 0 0 6px 0;
+      }
+
+      .ar-hud-panel {
+        position: absolute;
+        left: 50%;
+        bottom: 26%;
+        transform: translateX(-50%);
+        width: 78%;
+        max-width: 220px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(56, 170, 220, 0.28);
+        border: 1px solid rgba(125, 211, 252, 0.55);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      }
+
+      .ar-hud-panel--hint {
+        max-width: 92%;
+        width: max-content;
+        bottom: 22%;
+        padding: 9px 14px;
+      }
+
+      .ar-hud-hint-text {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.45;
+        color: #e0f2fe;
+        text-align: center;
+        font-weight: 700;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+      }
+
+      .ar-hud-label {
+        font-size: 11px;
+        font-weight: 800;
+        color: #e0f2fe;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        margin-bottom: 8px;
+        letter-spacing: 0.04em;
+      }
+
+      .ar-hud-knobs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .ar-knob {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), rgba(30, 80, 100, 0.6));
+        border: 2px solid rgba(186, 230, 253, 0.7);
+        box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+      }
+
+      .ar-hud-slider {
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(15, 23, 42, 0.45);
+        margin-bottom: 8px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .ar-hud-slider span {
+        display: block;
+        width: 55%;
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #38bdf8, #7dd3fc);
+      }
+
+      .ar-hud-wave {
+        height: 36px;
+        border-radius: 6px;
+        background: rgba(6, 40, 25, 0.65);
+        border: 1px solid rgba(52, 211, 153, 0.35);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .ar-hud-wave svg {
+        width: 92%;
+        height: 28px;
+      }
+
+      .ar-wave-path {
+        fill: none;
+        stroke: #4ade80;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-dasharray: 12 40;
+        animation: ar-dash 1.8s linear infinite;
+      }
+
+      @keyframes ar-dash {
+        to {
+          stroke-dashoffset: -104;
+        }
+      }
+
+      .ar-hud-tag {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 10px;
+        color: #bae6fd;
+        opacity: 0.95;
+      }
+
+      .ar-step-chip {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        max-width: 92%;
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: rgba(15, 23, 42, 0.82);
+        color: #f1f5f9;
+        font-size: 11px;
+        line-height: 1.4;
+        text-align: center;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        pointer-events: none;
+      }
+
+      .ar-dock {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 10px 16px 14px;
+        background: #252525;
+        border-top: 1px solid #18181b;
+      }
+
+      .ar-dock-btn {
+        width: 44px;
+        height: 44px;
+        border: none;
+        border-radius: 50%;
+        background: #3f3f46;
+        color: #e4e4e7;
+        font-size: 20px;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+      }
+
+      .ar-dock-focus {
+        border: 2px solid #71717a;
+        font-size: 18px;
+      }
+
+      .ar-dock-shutter {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        border: 4px solid #fafafa;
+        background: #fafafa;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+        cursor: pointer;
+      }
+
+      .ar-dock-cam {
+        font-size: 22px;
+        line-height: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      <p style="padding:16px;background:#fee;color:#111;text-align:center">يُرجى تفعيل JavaScript لعرض LabGuide.</p>
+    </noscript>
+    <div class="device-frame">
+      <div class="device-notch-row" aria-hidden="true">
+        <span class="device-camera"></span>
+        <span class="device-speaker"></span>
+      </div>
+      <div class="device-screen">
+      <div class="app-screens" id="appScreens">
+      <section class="phone splash is-active" data-screen="splash">
+        <div class="center-box">
+          <div class="logo">⚗</div>
+          <div class="title">LabGuide</div>
+          <div class="subtitle">تدرب بذكاء... قبل المختبر وداخله</div>
+          <div class="dots">
+            <span class="dot"></span><span class="dot active"></span><span class="dot"></span>
+          </div>
+          <button type="button" class="btn primary btn-splash-continue" data-screen-go="specialty" style="margin-top:20px;padding:12px 28px;border-radius:12px;border:none;font-weight:700;cursor:pointer;background:var(--accent);color:#063036">
+            ابدأ
+          </button>
+        </div>
+      </section>
+
+      <section class="phone" data-screen="specialty">
+        <div class="screen-top"><span class="nav-back">‹</span><strong>اختر التخصص</strong><span></span></div>
+        <div class="body list">
+          <div class="item" data-screen-go="devices" data-specialty="electric"><span class="icon">⚡</span>الهندسة الكهربائية</div>
+          <div class="item" data-screen-go="devices" data-specialty="mechanical"><span class="icon">⚙</span>الهندسة الميكانيكية</div>
+          <div class="item" data-screen-go="devices" data-specialty="civil"><span class="icon">🏗</span>الهندسة المدنية</div>
+          <div class="item" data-screen-go="devices" data-specialty="chemical"><span class="icon">🧪</span>الهندسة الكيميائية</div>
+          <div class="item" data-screen-go="devices" data-specialty="industrial"><span class="icon">🏭</span>الهندسة الصناعية</div>
+          <div class="item" data-screen-go="devices" data-specialty="computer"><span class="icon">💻</span>هندسة الحاسب</div>
+        </div>
+      </section>
+
+      <section class="phone" data-screen="devices">
+        <div class="screen-top"><span class="nav-back">‹</span><strong id="devicesScreenTitle">المختبر</strong><span></span></div>
+        <div class="body">
+          <div style="text-align:center;font-weight:700;margin-bottom:10px">اختر الجهاز</div>
+          <div class="list" id="devicesListRoot"></div>
+        </div>
+      </section>
+
+      <section class="phone" data-screen="mode-oscillo">
+        <div class="screen-top"><span class="nav-back">‹</span><strong>Oscilloscope</strong><span></span></div>
+        <div class="body">
+          <div style="text-align:center;font-weight:700;margin-bottom:12px;color:#1e293b">اختر وضع التدريب</div>
+          <div class="option one" data-screen-go="train3d1">التدريب في المنزل (محاكاة ثلاثية الأبعاد)</div>
+          <div class="option two" data-screen-go="ar-live">داخل المختبر (وضع AR)</div>
+          <div class="ar-explainer">
+            <h3>ما هو AR في LabGuide؟</h3>
+            <strong style="color:#0f766e">الواقع المعزز (Augmented Reality)</strong> يعني أن التطبيق يعرض على كاميرا هاتفك طبقة إرشادات فوق الجهاز الحقيقي في المختبر (أسهم، تسميات للمنافذ مثل CH1، ترتيب الخطوات). ترى الجهاز أمامك والتعليمات «مرسومة» عليه، بخلاف المحاكاة 3D التي تجرى على الشاشة فقط في المنزل.
+          </div>
+        </div>
+      </section>
+
+      <section class="phone" data-screen="mode-lab">
+        <div class="screen-top"><span class="nav-back">‹</span><strong id="modeLabTitle">الجهاز</strong><span></span></div>
+        <div class="body">
+          <div style="text-align:center;font-weight:700;margin-bottom:12px;color:#1e293b">اختر وضع التدريب</div>
+          <div class="option one" data-screen-go="train3d1">التدريب في المنزل (محاكاة ثلاثية الأبعاد)</div>
+          <div class="option two" data-screen-go="ar-live">داخل المختبر (وضع AR)</div>
+          <div class="ar-explainer">
+            <h3>تدريب على الجهاز المختار</h3>
+            المحاكاة ثلاثية الأبعاد: التحكم من النموذج (مقابض، طاقة، ومداخل CH1/GND على راسم الإشارة). اللوحة أسفل الشاشة للقراءة فقط. وضع AR: إرشاد فوق الكاميرا — التحكم على الجهاز الحقيقي في المختبر.
+          </div>
+        </div>
+      </section>
+
+      <section class="phone step-screen" data-screen="train3d1">
+        <div class="screen-top"><span class="nav-back">‹</span><strong>(3D) التدريب في المنزل</strong><span>?</span></div>
+        <div class="machine-stack">
+          <div class="machine" data-device-3d="oscilloscope" data-3d-interactive="1"></div>
+          <aside class="lab-sim-panel multimeter-panel is-hidden" hidden dir="rtl">
+            <div class="lab-sim-dynamic" aria-live="polite"></div>
+          </aside>
+        </div>
+        <div class="step-panel">
+          <div class="train-step-num" style="text-align:center;margin-bottom:8px">1 / 5</div>
+          <div class="train-step-main" style="text-align:center">على راسم الإشارة: وصّل مجس القناة 1 (CH1) في المدخل المقابل</div>
+          <div class="step-notes train-step-notes">تأكد أن مفتاح القناة CH1 مفعّل وأن المجس مضبوط على 1× إن كان مناسباً للقياس.</div>
+        </div>
+        <div class="bottom-nav">
+          <button type="button" class="btn ghost">Rotate</button>
+          <button type="button" class="btn ghost">Zoom</button>
+          <button type="button" class="btn ghost">Reset</button>
+          <button type="button" class="btn primary" data-screen-go="train3d2">التالي</button>
+        </div>
+      </section>
+
+      <section class="phone step-screen" data-screen="train3d2">
+        <div class="screen-top"><span class="nav-back">‹</span><strong>(3D) التدريب في المنزل</strong><span>?</span></div>
+        <div class="machine-stack">
+          <div class="machine" data-device-3d="oscilloscope" data-3d-interactive="1"></div>
+          <aside class="lab-sim-panel multimeter-panel is-hidden" hidden dir="rtl">
+            <div class="lab-sim-dynamic" aria-live="polite"></div>
+          </aside>
+        </div>
+        <div class="step-panel">
+          <div class="train-step-num" style="text-align:center;margin-bottom:8px">3 / 5</div>
+          <div class="train-step-main" style="text-align:center">على غرابيل الجهد العمودي (V/div): اضبط المقياس حتى تظهر الإشارة بوضوح (~5V ذروة)</div>
+          <div class="step-notes train-step-notes">الجهد الظاهر = عدد الأقسام × قيمة V/div؛ راجع مفتاح المجس (1×/10×) لأن الحساب يعتمد عليه.</div>
+        </div>
+        <div class="bottom-nav">
+          <button type="button" class="btn ghost">Rotate</button>
+          <button type="button" class="btn ghost">Zoom</button>
+          <button type="button" class="btn ghost">Reset</button>
+          <button type="button" class="btn primary" data-screen-go="train3d3">التالي</button>
+        </div>
+      </section>
+
+      <section class="phone step-screen" data-screen="train3d3">
+        <div class="screen-top"><span class="nav-back">‹</span><strong>(3D) التدريب في المنزل</strong><span>?</span></div>
+        <div class="machine-stack">
+          <div class="machine" data-device-3d="oscilloscope" data-3d-interactive="1"></div>
+          <aside class="lab-sim-panel multimeter-panel is-hidden" hidden dir="rtl">
+            <div class="lab-sim-dynamic" aria-live="polite"></div>
+          </aside>
+        </div>
+        <div class="step-panel">
+          <div class="train-step-num" style="text-align:center;margin-bottom:8px">5 / 5</div>
+          <div class="train-step-main" style="text-align:center">ممتاز! الإشارة مستقرة على شاشة راسم الإشارة</div>
+          <div class="step-notes train-step-notes">قبل فك التوصيل: أوقف التغذية أو خفّض الجهد، ثم افصل المجس من CH1 لتجنب أي قفزات جهد.</div>
+        </div>
+        <div class="bottom-nav">
+          <button type="button" class="btn primary" style="flex:1" data-screen-go="success">إنهاء التجربة</button>
+        </div>
+      </section>
+
+      <section class="phone ar-interface" data-screen="ar-live" aria-label="وضع AR مع الكاميرا">
+        <div class="ar-topbar">
+          <span class="ar-back nav-back">‹</span>
+          <strong id="arLiveTitle">راسم الإشارة — AR</strong>
+          <span class="ar-star-wrap">☆<span class="ar-badge">1</span></span>
+        </div>
+        <div class="ar-subbar">
+          <span>إرشاد على الجهاز الحقيقي</span>
+          <button type="button" class="ar-tools-btn">أدوات</button>
+        </div>
+        <div class="ar-viewport">
+          <button type="button" class="ar-next-fab" data-screen-go="ar-guided">الخطوة التالية ←</button>
+          <video id="arCameraDemo" class="ar-feed" playsinline muted autoplay></video>
+          <div class="ar-feed-fallback" aria-hidden="true"></div>
+          <div class="ar-overlay">
+            <div class="ar-track-rect">
+              <span class="ar-br ar-br--tl"></span>
+              <span class="ar-br ar-br--tr"></span>
+              <span class="ar-br ar-br--bl"></span>
+              <span class="ar-br ar-br--br"></span>
+            </div>
+            <div class="ar-hud-panel ar-hud-panel--hint" role="note">
+              <p class="ar-hud-hint-text">التحكم يكون على راسم الإشارة أمام الكاميرا — لا توجد لوحة تحكم رقمية بديلة.</p>
+            </div>
+          </div>
+        </div>
+        <div class="ar-dock">
+          <button type="button" class="ar-dock-btn ar-dock-focus" title="مسح الجهاز">◎</button>
+          <button type="button" class="ar-dock-shutter" title="لقطة"></button>
+          <button type="button" class="ar-dock-btn ar-dock-cam" title="معرض الصور">📷</button>
+        </div>
+      </section>
+
+      <section class="phone ar-interface" data-screen="ar-guided" aria-label="AR مع خطوة إرشاد">
+        <div class="ar-topbar">
+          <span class="ar-back nav-back">‹</span>
+          <strong>المختبر — AR</strong>
+          <span class="ar-star-wrap">☆</span>
+        </div>
+        <div class="ar-subbar">
+          <span>تنفيذ على الجهاز نفسه</span>
+          <button type="button" class="ar-tools-btn">أدوات</button>
+        </div>
+        <div class="ar-viewport">
+          <button type="button" class="ar-done-fab" data-screen-go="success">إنهاء</button>
+          <div class="ar-feed-fallback is-visible" aria-hidden="true"></div>
+          <div class="ar-step-chip">
+            الخطوة 2: ثبّت مجس CH1 في المدخل وGND على الدائرة
+          </div>
+          <div class="ar-overlay">
+            <div class="ar-track-rect">
+              <span class="ar-br ar-br--tl"></span>
+              <span class="ar-br ar-br--tr"></span>
+              <span class="ar-br ar-br--bl"></span>
+              <span class="ar-br ar-br--br"></span>
+            </div>
+            <div class="ar-hud-panel ar-hud-panel--hint" role="note">
+              <p class="ar-hud-hint-text">نفّذ الخطوة يدوياً على الجهاز داخل الإطار؛ التطبيق يوجّه فقط.</p>
+            </div>
+          </div>
+        </div>
+        <div class="ar-dock">
+          <button type="button" class="ar-dock-btn ar-dock-focus">◎</button>
+          <button type="button" class="ar-dock-shutter"></button>
+          <button type="button" class="ar-dock-btn ar-dock-cam">📷</button>
+        </div>
+      </section>
+
+      <section class="phone step-screen success" data-screen="success">
+        <div class="success-card">
+          <div class="check">✓</div>
+          <div class="title" style="font-size:38px">تمت التجربة بنجاح!</div>
+          <div class="subtitle">لقد أتممت جميع الخطوات بنجاح</div>
+          <div class="button-stack">
+            <button type="button" class="btn primary" data-nav-home="1">العودة للرئيسية</button>
+            <button type="button" class="btn ghost" data-nav-devices="1">تجربة جهاز آخر</button>
+          </div>
+        </div>
+      </section>
+      </div>
+      <div class="device-home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+    <script>
+      window.__labGuide3D = {
+        initIn: function () {},
+        disposeIn: function (root) {
+          if (!root || !root.querySelectorAll) return;
+          root.querySelectorAll("[data-device-3d]").forEach(function (el) {
+            el.replaceChildren();
+          });
+          if (root.dataset) delete root.dataset.stepWired;
+        },
+      };
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.js"
+        }
+      }
+    </script>
+    <script type="module">
+      /* Three.js من www/vendor — لا يعتمد على CDN (يعمل مع ngrok وبطء الشبكة) */
+      import * as THREE from "three";
+      import { OrbitControls } from "./vendor/OrbitControls.js";
+      import { GLTFLoader } from "./vendor/GLTFLoader.js";
+
+      const gltfLoader = new GLTFLoader();
+      const metal = (hex) =>
+        new THREE.MeshStandardMaterial({
+          color: hex,
+          metalness: 0.42,
+          roughness: 0.48,
+        });
+
+      const wireMatOrange = new THREE.MeshStandardMaterial({
+        color: 0xd97706,
+        metalness: 0.12,
+        roughness: 0.52,
+      });
+      const wireMatRed = new THREE.MeshStandardMaterial({
+        color: 0xb91c1c,
+        metalness: 0.12,
+        roughness: 0.48,
+      });
+
+      function tagKnob(mesh, step) {
+        mesh.userData.labInteractive = { kind: "knob", axis: "y", step: step != null ? step : 0.42 };
+      }
+
+      function makeScreenTexture(w, h) {
+        const c = document.createElement("canvas");
+        c.width = w;
+        c.height = h;
+        const ctx = c.getContext("2d");
+        ctx.fillStyle = "#020c14";
+        ctx.fillRect(0, 0, w, h);
+        const tex = new THREE.CanvasTexture(c);
+        if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+        tex.magFilter = THREE.LinearFilter;
+        tex.minFilter = THREE.LinearFilter;
+        return { canvas: c, ctx, texture: tex };
+      }
+
+      function makeScreenMesh(opts) {
+        const o = opts || {};
+        const w = o.w != null ? o.w : 1.0;
+        const h = o.h != null ? o.h : 0.6;
+        const px = o.px != null ? o.px : 512;
+        const py = o.py != null ? o.py : Math.round((px * h) / w);
+        const sc = makeScreenTexture(px, py);
+        const mat = new THREE.MeshStandardMaterial({
+          color: 0x000000,
+          emissive: 0xffffff,
+          emissiveMap: sc.texture,
+          emissiveIntensity: 1.35,
+          roughness: 0.92,
+          metalness: 0,
+        });
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+        mesh.userData.screen = sc;
+        sc.kind = o.kind || "generic";
+        return mesh;
+      }
+
+      function attachHitArea(mesh, padding) {
+        const pad = padding != null ? padding : 0.18;
+        const hitMat = new THREE.MeshBasicMaterial({ visible: false, depthWrite: false, transparent: true, opacity: 0 });
+        const box = new THREE.Box3().setFromObject(mesh);
+        const sz = new THREE.Vector3();
+        box.getSize(sz);
+        const w = Math.max(0.001, sz.x) + pad;
+        const h = Math.max(0.001, sz.y) + pad;
+        const d = Math.max(0.001, sz.z) + pad;
+        const hit = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), hitMat);
+        hit.position.set(0, 0, 0);
+        hit.userData.labInteractive = Object.assign({}, mesh.userData.labInteractive, { proxy: true });
+        hit.userData.proxyTarget = mesh;
+        mesh.add(hit);
+        return hit;
+      }
+
+      function makeLabel(text, color) {
+        const canvas = document.createElement("canvas");
+        canvas.width = 256;
+        canvas.height = 64;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+        ctx.strokeStyle = color || "#7dd3fc";
+        ctx.lineWidth = 4;
+        const r = 14;
+        ctx.beginPath();
+        ctx.moveTo(r, 2);
+        ctx.lineTo(canvas.width - r, 2);
+        ctx.quadraticCurveTo(canvas.width - 2, 2, canvas.width - 2, r);
+        ctx.lineTo(canvas.width - 2, canvas.height - r);
+        ctx.quadraticCurveTo(canvas.width - 2, canvas.height - 2, canvas.width - r, canvas.height - 2);
+        ctx.lineTo(r, canvas.height - 2);
+        ctx.quadraticCurveTo(2, canvas.height - 2, 2, canvas.height - r);
+        ctx.lineTo(2, r);
+        ctx.quadraticCurveTo(2, 2, r, 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#f1f5f9";
+        ctx.font = "bold 30px system-ui, -apple-system, Segoe UI, Tahoma";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 2);
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.needsUpdate = true;
+        const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+        const sprite = new THREE.Sprite(mat);
+        sprite.scale.set(0.7, 0.18, 1);
+        sprite.renderOrder = 999;
+        sprite.raycast = function () {};
+        return sprite;
+      }
+
+      function makePowerButton(opts) {
+        const o = opts || {};
+        const mat = new THREE.MeshStandardMaterial({
+          color: o.color != null ? o.color : 0x334155,
+          metalness: 0.4,
+          roughness: 0.5,
+          emissive: 0x000000,
+          emissiveIntensity: 0,
+        });
+        const w = o.w != null ? o.w : 0.34;
+        const h = o.h != null ? o.h : 0.22;
+        const d = o.d != null ? o.d : 0.1;
+        const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+        m.userData.labInteractive = { kind: "powerBtn" };
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(Math.max(w, h) * 0.45, 0.018, 8, 24),
+          new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x16a34a, emissiveIntensity: 0.35, metalness: 0.4, roughness: 0.4 })
+        );
+        ring.position.z = d / 2 + 0.01;
+        ring.userData.proxyTarget = m;
+        ring.userData.labInteractive = Object.assign({}, m.userData.labInteractive, { proxy: true });
+        m.add(ring);
+        attachHitArea(m, 0.22);
+        return m;
+      }
+
+      function makeJack(opts) {
+        const o = opts || {};
+        const mat = new THREE.MeshStandardMaterial({
+          color: o.color != null ? o.color : 0xb8956a,
+          metalness: 0.55,
+          roughness: 0.45,
+          emissive: 0x000000,
+          emissiveIntensity: 0,
+        });
+        const r = o.r != null ? o.r : 0.16;
+        const len = o.len != null ? o.len : 0.18;
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 24), mat);
+        if (o.lay !== false) m.rotation.x = Math.PI / 2;
+        m.userData.labInteractive = {
+          kind: "jack",
+          role: o.role || "red",
+          stateKey: o.stateKey,
+          id: o.id,
+        };
+        const rim = new THREE.Mesh(
+          new THREE.TorusGeometry(r + 0.02, 0.022, 8, 28),
+          new THREE.MeshStandardMaterial({
+            color: o.role === "black" ? 0xcbd5e1 : 0xfca5a5,
+            emissive: o.role === "black" ? 0x475569 : 0x991b1b,
+            emissiveIntensity: 0.4,
+          })
+        );
+        rim.position.set(0, len / 2 + 0.005, 0);
+        rim.userData.proxyTarget = m;
+        rim.userData.labInteractive = Object.assign({}, m.userData.labInteractive, { proxy: true });
+        m.add(rim);
+        attachHitArea(m, 0.22);
+        return m;
+      }
+
+      function makeActionButton(opts) {
+        const o = opts || {};
+        const mat = new THREE.MeshStandardMaterial({
+          color: o.color != null ? o.color : 0x475569,
+          metalness: 0.35,
+          roughness: 0.55,
+          emissive: 0x000000,
+          emissiveIntensity: 0,
+        });
+        const w = o.w != null ? o.w : 0.28;
+        const h = o.h != null ? o.h : 0.18;
+        const d = o.d != null ? o.d : 0.1;
+        const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+        m.userData.labInteractive = {
+          kind: "actionBtn",
+          stateKey: o.stateKey,
+          activeColor: o.activeColor != null ? o.activeColor : 0x16a34a,
+        };
+        attachHitArea(m, 0.18);
+        return m;
+      }
+
+      const MM_MODES = [
+        { id: "off", labelAr: "إيقاف", unit: "" },
+        { id: "vdc", labelAr: "V ⎓ تيار مستمر", unit: "V" },
+        { id: "vac", labelAr: "V ~ تيار متردد", unit: "V" },
+        { id: "ohm", labelAr: "Ω مقاومة", unit: "Ω" },
+        { id: "beep", labelAr: "●) استمرارية", unit: "" },
+        { id: "adc", labelAr: "A ⎓ تيار مستمر", unit: "A" },
+        { id: "aac", labelAr: "A ~ تيار متردد", unit: "A" },
+      ];
+
+      const OSC_MODES = [
+        { id: "base", labelAr: "قياس أساسي · CH1/GND", unit: "V" },
+        { id: "t1", labelAr: "190 µs/div", unit: "" },
+        { id: "t2", labelAr: "2 ms/div", unit: "" },
+        { id: "v1", labelAr: "500 mV/div", unit: "" },
+        { id: "v2", labelAr: "1 V/div", unit: "" },
+        { id: "trig", labelAr: "زناد مستقر", unit: "" },
+        { id: "math", labelAr: "Math · FFT", unit: "" },
+      ];
+
+      const BB_MODES = [
+        { id: "holes", labelAr: "صف الثقوب الرئيسي", unit: "" },
+        { id: "rail", labelAr: "سكتان جانبيتان", unit: "" },
+        { id: "power", labelAr: "تغذية افتراضية", unit: "" },
+        { id: "proto", labelAr: "وضع تجريبي", unit: "" },
+        { id: "diag", labelAr: "فحص التوصيل", unit: "" },
+      ];
+
+      const PSU_MODES = [
+        { id: "off", labelAr: "إخراج مطفأ", unit: "V" },
+        { id: "v3", labelAr: "3.3 V ثابت", unit: "V" },
+        { id: "v5", labelAr: "5.0 V ثابت", unit: "V" },
+        { id: "v12", labelAr: "12.0 V ثابت", unit: "V" },
+        { id: "cv", labelAr: "CV · قابل للضبط", unit: "V" },
+        { id: "cc", labelAr: "CC · حدّ تيار", unit: "A" },
+      ];
+
+      const FG_MODES = [
+        { id: "sine", labelAr: "موجة جيبية", unit: "Hz" },
+        { id: "tri", labelAr: "موجة مثلثية", unit: "Hz" },
+        { id: "sq", labelAr: "موجة مربعة", unit: "Hz" },
+        { id: "pulse", labelAr: "نبضات", unit: "Hz" },
+        { id: "sweep", labelAr: "مسح تردد", unit: "" },
+        { id: "arb", labelAr: "شكل تعسفي", unit: "" },
+      ];
+
+      const SPEC_MODES = [
+        { id: "span1", labelAr: "نطاق 1 MHz", unit: "MHz" },
+        { id: "span2", labelAr: "نطاق 10 MHz", unit: "MHz" },
+        { id: "rbw", labelAr: "RBW واسع", unit: "" },
+        { id: "peak", labelAr: "تتبع الذروة", unit: "" },
+        { id: "avg", labelAr: "متوسط", unit: "" },
+        { id: "hold", labelAr: "مسك ذروة", unit: "" },
+      ];
+
+      const MODE_LISTS = {
+        multimeter: MM_MODES,
+        oscilloscope: OSC_MODES,
+        breadboard: BB_MODES,
+        "power-supply": PSU_MODES,
+        "function-generator": FG_MODES,
+        spectrum: SPEC_MODES,
+      };
+
+      const LAB_SIM_TYPES = new Set(Object.keys(MODE_LISTS));
+
+      function createLabSimState(device) {
+        const base = { device: device, modeIdx: 0 };
+        switch (device) {
+          case "multimeter":
+            return Object.assign(base, {
+              powerOn: false,
+              mmBlack: null,
+              mmRed: null,
+            });
+          case "oscilloscope":
+            return Object.assign(base, {
+              powerOn: false,
+              scopeBlack: null,
+              scopeRed: null,
+            });
+          case "breadboard":
+            return Object.assign(base, {
+              bbPower: false,
+              railP: false,
+              railN: false,
+              bridgeA: false,
+              bridgeB: false,
+            });
+          case "power-supply":
+            return Object.assign(base, {
+              psuRed: null,
+              psuBlack: null,
+              outputOn: false,
+            });
+          case "function-generator":
+            return Object.assign(base, {
+              powerOn: false,
+              fgRed: null,
+              fgBlack: null,
+              outputOn: false,
+            });
+          case "spectrum":
+            return Object.assign(base, { powerOn: false });
+          default:
+            return base;
+        }
+      }
+
+      function findLabSimState(mesh, modelRoot) {
+        let n = mesh;
+        while (n) {
+          if (n.userData && n.userData.labSim) return n.userData.labSim;
+          n = n.parent;
+        }
+        return modelRoot.userData.labSim || null;
+      }
+
+      function findDialMesh(modelRoot) {
+        let found = null;
+        modelRoot.traverse((o) => {
+          if (found) return;
+          if (!o.isMesh || !o.userData.labInteractive) return;
+          const r = o.userData.labInteractive.role;
+          if (r === "labDial" || r === "mmDial") found = o;
+        });
+        return found;
+      }
+
+      function buildLabPanelMarkup(device) {
+        const heads = {
+          multimeter: "شاشة الملتيميتر",
+          oscilloscope: "شاشة راسم الإشارة",
+          breadboard: "حالة اللوح التجريبي",
+          "power-supply": "شاشة مزود الطاقة",
+          "function-generator": "شاشة مولّد الإشارة",
+          spectrum: "شاشة محلّل الطيف",
+        };
+        const head = heads[device] || "شاشة الجهاز";
+        const modeLabel =
+          device === "function-generator"
+            ? "الشكل"
+            : device === "power-supply"
+            ? "الإعداد"
+            : device === "spectrum"
+            ? "النطاق"
+            : "الوضع";
+        return (
+          '<div class="mm-panel-head">' + head + "</div>" +
+          '<div class="mm-lcd"><span class="mm-lcd-main"> — — — — </span><span class="mm-lcd-unit"></span></div>' +
+          '<div class="mm-mode-row">' + modeLabel + ': <span class="mm-mode-val">—</span></div>' +
+          '<p class="lab-sim-status"></p>' +
+          '<p class="mm-hint lab-device-hint">انقر على الجهاز نفسه: زر الطاقة، المداخل، السكك، والمقابض. اضغط ضغطة قصيرة بدون سحب.</p>'
+        );
+      }
+
+      function drawDeviceScreen(model, panelEl) {
+        const screen = model && model.userData && model.userData.screen;
+        if (!screen || !screen.ctx) return;
+        const state = model.userData.labSim || {};
+        const lcdMain = panelEl ? panelEl.querySelector(".mm-lcd-main") : null;
+        const lcdUnit = panelEl ? panelEl.querySelector(".mm-lcd-unit") : null;
+        const modeVal = panelEl ? panelEl.querySelector(".mm-mode-val") : null;
+        const main = lcdMain ? (lcdMain.textContent || "").trim() : "";
+        const unit = lcdUnit ? (lcdUnit.textContent || "").trim() : "";
+        const mode = modeVal ? (modeVal.textContent || "").trim() : "";
+        const ctx = screen.ctx;
+        const W = screen.canvas.width;
+        const H = screen.canvas.height;
+        const t = Date.now() / 1000;
+
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, "#031018");
+        grad.addColorStop(1, "#020a10");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        if (screen.kind === "multimeter") {
+          ctx.fillStyle = "#94a3b8";
+          ctx.font = "bold " + Math.floor(H * 0.16) + "px sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillText(mode || "", 12, 8);
+
+          const isErr = /POWER|OL|LEAd| — /i.test(main);
+          ctx.fillStyle = isErr ? "#fca5a5" : "#86efac";
+          ctx.font = "bold " + Math.floor(H * 0.55) + "px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "right";
+          ctx.textBaseline = "middle";
+          const padR = Math.max(60, W * 0.18);
+          ctx.fillText(main || "----", W - padR, H * 0.6);
+
+          ctx.fillStyle = "#fde68a";
+          ctx.font = "bold " + Math.floor(H * 0.22) + "px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "left";
+          ctx.fillText(unit || "", W - padR + 8, H * 0.65);
+          if (state.powerOn) {
+            ctx.fillStyle = "#22c55e";
+            ctx.beginPath();
+            ctx.arc(W - 14, H - 14, 6, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        } else if (screen.kind === "power-supply") {
+          const isErr = /OFF|LEAd|---/i.test(main);
+          ctx.fillStyle = "#7dd3fc";
+          ctx.font = "bold " + Math.floor(H * 0.2) + "px sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillText(mode || "", 12, 8);
+          ctx.fillStyle = isErr ? "#fca5a5" : "#fbbf24";
+          ctx.font = "bold " + Math.floor(H * 0.65) + "px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "right";
+          ctx.textBaseline = "middle";
+          const padR = Math.max(60, W * 0.16);
+          ctx.fillText(main || "----", W - padR, H * 0.62);
+          ctx.fillStyle = "#86efac";
+          ctx.font = "bold " + Math.floor(H * 0.28) + "px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "left";
+          ctx.fillText(unit || "", W - padR + 8, H * 0.65);
+        } else if (screen.kind === "oscilloscope") {
+          ctx.strokeStyle = "rgba(125, 211, 252, 0.2)";
+          ctx.lineWidth = 1;
+          for (let i = 1; i < 10; i++) {
+            const x = (i / 10) * W;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, H);
+            ctx.stroke();
+          }
+          for (let i = 1; i < 8; i++) {
+            const y = (i / 8) * H;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(W, y);
+            ctx.stroke();
+          }
+          ctx.strokeStyle = "rgba(125, 211, 252, 0.5)";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(0, H / 2);
+          ctx.lineTo(W, H / 2);
+          ctx.stroke();
+          const showWave =
+            state.powerOn && state.scopeRed === "ch1" && state.scopeBlack === "gnd";
+          if (showWave) {
+            ctx.strokeStyle = "#facc15";
+            ctx.lineWidth = 3;
+            ctx.shadowColor = "#facc15";
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            const amp = H * 0.3;
+            const cycles = 3 + (state.modeIdx % 4);
+            for (let x = 0; x <= W; x += 2) {
+              const phase = (x / W) * Math.PI * 2 * cycles + t * 4;
+              const y = H / 2 + Math.sin(phase) * amp + Math.sin(phase * 3) * amp * 0.08;
+              if (x === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+          } else {
+            ctx.fillStyle = "#94a3b8";
+            ctx.font = "bold " + Math.floor(H * 0.1) + "px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(main || "NO SIGNAL", W / 2, H / 2);
+          }
+          ctx.fillStyle = "#86efac";
+          ctx.font = "bold " + Math.floor(H * 0.085) + "px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillText(mode + "  " + main + " " + unit, 12, 10);
+        } else if (screen.kind === "function-generator") {
+          const showWave =
+            state.powerOn && state.outputOn && state.fgRed === "outp" && state.fgBlack === "outn";
+          ctx.strokeStyle = "rgba(125, 211, 252, 0.18)";
+          ctx.lineWidth = 1;
+          for (let i = 1; i < 6; i++) {
+            const x = (i / 6) * W;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, H);
+            ctx.stroke();
+          }
+          if (showWave) {
+            const modes = MODE_LISTS["function-generator"] || [];
+            const m = modes[state.modeIdx] || modes[0] || { id: "sine" };
+            ctx.strokeStyle = "#fbbf24";
+            ctx.lineWidth = 3;
+            ctx.shadowColor = "#fbbf24";
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            const amp = H * 0.3;
+            const cycles = 3;
+            for (let x = 0; x <= W; x += 2) {
+              const ph = (x / W) * Math.PI * 2 * cycles + t * 3;
+              let y;
+              if (m.id === "sine") y = Math.sin(ph) * amp;
+              else if (m.id === "tri") y = ((Math.asin(Math.sin(ph)) * 2) / Math.PI) * amp;
+              else if (m.id === "sq") y = Math.sin(ph) >= 0 ? amp : -amp;
+              else if (m.id === "pulse") {
+                const p = ((ph % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+                y = p < Math.PI * 0.4 ? -amp : amp;
+              } else if (m.id === "sweep") {
+                const f = 1 + ((x / W) * 5);
+                y = Math.sin(ph * f) * amp;
+              } else y = Math.sin(ph) * amp + Math.sin(ph * 2.7 + t) * amp * 0.4;
+              y = H / 2 + y;
+              if (x === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+          }
+          ctx.fillStyle = "#7dd3fc";
+          ctx.font = "bold " + Math.floor(H * 0.16) + "px sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillText(mode || "", 10, 8);
+          ctx.fillStyle = showWave ? "#86efac" : "#fca5a5";
+          ctx.textAlign = "right";
+          ctx.font = "bold " + Math.floor(H * 0.18) + "px ui-monospace, Menlo, monospace";
+          ctx.fillText(main + " " + unit, W - 12, H - H * 0.22);
+        } else if (screen.kind === "spectrum") {
+          ctx.strokeStyle = "rgba(125, 211, 252, 0.18)";
+          ctx.lineWidth = 1;
+          for (let i = 1; i < 10; i++) {
+            const x = (i / 10) * W;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, H);
+            ctx.stroke();
+          }
+          for (let i = 1; i < 6; i++) {
+            const y = (i / 6) * H;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(W, y);
+            ctx.stroke();
+          }
+          if (state.powerOn) {
+            const bars = 28;
+            const bw = W / bars;
+            for (let i = 0; i < bars; i++) {
+              const v =
+                (Math.sin(t * 1.3 + i * 0.4) * 0.3 +
+                  Math.cos(t * 0.7 + i * 0.9) * 0.25 +
+                  Math.sin(t * 2.1 + i * 0.13) * 0.15 +
+                  0.45) *
+                H *
+                0.85;
+              const grad2 = ctx.createLinearGradient(0, H - v, 0, H);
+              grad2.addColorStop(0, "#f43f5e");
+              grad2.addColorStop(0.5, "#fbbf24");
+              grad2.addColorStop(1, "#22d3ee");
+              ctx.fillStyle = grad2;
+              ctx.fillRect(i * bw + 2, H - v, bw - 4, v);
+            }
+          }
+          ctx.fillStyle = "#86efac";
+          ctx.font = "bold " + Math.floor(H * 0.11) + "px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillText(mode + "  " + main + " " + unit, 12, 10);
+        } else if (screen.kind === "breadboard") {
+          const isErr = /POWER|OL/i.test(main);
+          ctx.fillStyle = isErr ? "#fca5a5" : "#86efac";
+          ctx.font = "bold " + Math.floor(H * 0.6) + "px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText((main || "—") + (unit ? " " + unit : ""), W / 2, H * 0.6);
+          ctx.fillStyle = "#94a3b8";
+          ctx.font = "bold " + Math.floor(H * 0.18) + "px sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillText(mode || "", 8, 6);
+        }
+
+        screen.texture.needsUpdate = true;
+      }
+
+      function refreshLabSimulationDisplay(panelEl, model) {
+        const state = model.userData.labSim;
+        const lcdMain = panelEl.querySelector(".mm-lcd-main");
+        const lcdUnit = panelEl.querySelector(".mm-lcd-unit");
+        const modeVal = panelEl.querySelector(".mm-mode-val");
+        if (!state || !lcdMain || !modeVal) return;
+
+        const dev = state.device;
+        const modes = MODE_LISTS[dev];
+        const mode = modes && modes[state.modeIdx] ? modes[state.modeIdx] : modes[0];
+        if (!mode) return;
+
+        modeVal.textContent = mode.labelAr;
+
+        const t = Date.now() / 1000;
+
+        if (dev === "multimeter") {
+          var statusEl = panelEl.querySelector(".lab-sim-status");
+          function lineStatus(t) {
+            if (statusEl) statusEl.textContent = t || "";
+          }
+
+          if (!state.powerOn) {
+            lcdMain.textContent = " POWER ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            lineStatus("اضغط «تشغيل الملتيميتر» ثم وصّل المجسّين إلى المنافذ.");
+            return;
+          }
+
+          if (mode.id === "off") {
+            lcdMain.textContent = " — — — ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            lineStatus("الجهاز يعمل؛ اضبط الوضع من المقبض على النموذج ثلاثي الأبعاد.");
+            return;
+          }
+
+          var blackOk = state.mmBlack === "com";
+          var red = state.mmRed;
+
+          function wrongLead() {
+            lcdMain.textContent = " LEAd ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            lineStatus("منفذ المجس الأحمر لا يطابق وضع القياس (جهد/Ω ← VΩ · تيار ⎓ ← mA · تيار عالي ← 10A).");
+          }
+
+          if (!blackOk || red == null) {
+            lcdMain.textContent = "  OL  ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            lineStatus("أوصل المجس الأسود إلى COM والأحمر إلى المنفذ المناسب للوضع.");
+            return;
+          }
+
+          var okForMode = false;
+          if (mode.id === "vdc" || mode.id === "vac" || mode.id === "ohm" || mode.id === "beep") {
+            okForMode = red === "vohm";
+          } else if (mode.id === "adc") {
+            okForMode = red === "ma";
+          } else if (mode.id === "aac") {
+            okForMode = red === "a10";
+          }
+
+          if (!okForMode) {
+            wrongLead();
+            return;
+          }
+
+          var rl = red === "vohm" ? "VΩ" : red === "ma" ? "mA" : "10A";
+          lineStatus("توصيل سليم: أسود ← COM · أحمر ← " + rl + ".");
+
+          switch (mode.id) {
+            case "vdc":
+              lcdMain.textContent = (12.02 + Math.sin(t / 2.1) * 0.04).toFixed(2);
+              if (lcdUnit) lcdUnit.textContent = mode.unit || "V";
+              break;
+            case "vac":
+              lcdMain.textContent = (230 + Math.sin(t / 1.7) * 1.2).toFixed(1);
+              if (lcdUnit) lcdUnit.textContent = mode.unit || "V";
+              break;
+            case "ohm":
+              lcdMain.textContent = "4.52";
+              if (lcdUnit) lcdUnit.textContent = "kΩ";
+              break;
+            case "beep":
+              lcdMain.textContent = " ●●● ";
+              if (lcdUnit) lcdUnit.textContent = "";
+              break;
+            case "adc":
+              lcdMain.textContent = (0.245 + Math.sin(t / 3) * 0.002).toFixed(3);
+              if (lcdUnit) lcdUnit.textContent = mode.unit || "A";
+              break;
+            case "aac":
+              lcdMain.textContent = (1.12 + Math.sin(t / 2.2) * 0.03).toFixed(2);
+              if (lcdUnit) lcdUnit.textContent = mode.unit || "A";
+              break;
+            default:
+              lcdMain.textContent = " — ";
+              if (lcdUnit) lcdUnit.textContent = "";
+          }
+          return;
+        }
+
+        if (dev === "oscilloscope") {
+          var statusOsc = panelEl.querySelector(".lab-sim-status");
+          function lineOsc(tx) {
+            if (statusOsc) statusOsc.textContent = tx || "";
+          }
+
+          if (!state.powerOn) {
+            lcdMain.textContent = " POWER ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            lineOsc("شغّل الراسم ثم وصّل مجس CH1 والأرضي.");
+            return;
+          }
+
+          if (state.scopeRed !== "ch1" || state.scopeBlack !== "gnd") {
+            lcdMain.textContent = " — — — ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            lineOsc("أوصل مجس الإشارة إلى مدخل CH1 والأرضي إلى GND.");
+            return;
+          }
+
+          lineOsc("مسار القياس: CH1 + GND؛ اضبط المقاييس من المقبض ثلاثي الأبعاد.");
+
+          var vpp = 4.8 + Math.sin(t / 1.4) * 0.15;
+          lcdMain.textContent = vpp.toFixed(2);
+          if (lcdUnit) lcdUnit.textContent = "Vpp";
+          return;
+        }
+
+        if (dev === "breadboard") {
+          var statusBb = panelEl.querySelector(".lab-sim-status");
+
+          if (!state.bbPower) {
+            lcdMain.textContent = " POWER ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            if (statusBb) statusBb.textContent = "فعّل «تغذية اللوح» ثم أوصل السكتين والجسرين.";
+            return;
+          }
+
+          var closed = state.railP && state.railN && state.bridgeA && state.bridgeB;
+          if (!closed) {
+            lcdMain.textContent = "  OL  ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            if (statusBb) statusBb.textContent = "فعّل سكة + وسكة − وجسرَي A و B لإغلاق مسار تجريبي.";
+          } else {
+            lcdMain.textContent = (32 + Math.sin(t / 2.8) * 2).toFixed(0);
+            if (lcdUnit) lcdUnit.textContent = "Ω";
+            if (statusBb) statusBb.textContent = "مسار مغلق؛ مقاومة تقريبية على العرض.";
+          }
+          return;
+        }
+
+        if (dev === "power-supply") {
+          var statusPsu = panelEl.querySelector(".lab-sim-status");
+          var leadsPsuOk = state.psuRed === "plus" && state.psuBlack === "minus";
+
+          if (!leadsPsuOk) {
+            lcdMain.textContent = " LEAd ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            if (statusPsu) statusPsu.textContent = "ثبّت الطرف الأحمر على + والأسود على − قبل القياس.";
+            return;
+          }
+
+          if (mode.id === "off" || !state.outputOn) {
+            lcdMain.textContent = " OFF ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            if (statusPsu) statusPsu.textContent = "الطرفان موصولان؛ اضغط «خرج تشغيل» واضبط الإعداد من المقبض.";
+            return;
+          }
+
+          if (statusPsu) statusPsu.textContent = "خرج يعمل؛ الطرفان +/− موصولان.";
+
+          if (mode.id === "v3") {
+            lcdMain.textContent = "3.30";
+            if (lcdUnit) lcdUnit.textContent = "V";
+          } else if (mode.id === "v5") {
+            lcdMain.textContent = "5.02";
+            if (lcdUnit) lcdUnit.textContent = "V";
+          } else if (mode.id === "v12") {
+            lcdMain.textContent = "12.05";
+            if (lcdUnit) lcdUnit.textContent = "V";
+          } else if (mode.id === "cv") {
+            lcdMain.textContent = (9.5 + Math.sin(t / 3.2) * 0.08).toFixed(2);
+            if (lcdUnit) lcdUnit.textContent = "V";
+          } else if (mode.id === "cc") {
+            lcdMain.textContent = (0.42 + Math.sin(t / 2.6) * 0.02).toFixed(2);
+            if (lcdUnit) lcdUnit.textContent = "A";
+          } else {
+            lcdMain.textContent = " — ";
+            if (lcdUnit) lcdUnit.textContent = "";
+          }
+          return;
+        }
+
+        if (dev === "function-generator") {
+          var statusFg = panelEl.querySelector(".lab-sim-status");
+
+          if (!state.powerOn) {
+            lcdMain.textContent = " POWER ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            if (statusFg) statusFg.textContent = "شغّل المولّد ثم أوصل OUT+/−.";
+            return;
+          }
+
+          var leadsFgOk = state.fgRed === "outp" && state.fgBlack === "outn";
+          if (!leadsFgOk) {
+            lcdMain.textContent = " LEAd ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            if (statusFg) statusFg.textContent = "أوصل طرفي الحمل إلى OUT + و OUT −.";
+            return;
+          }
+
+          if (!state.outputOn) {
+            lcdMain.textContent = " OUT OFF ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            if (statusFg) statusFg.textContent = "المخرج متوقف؛ اضغط «خرج ON».";
+            return;
+          }
+
+          if (statusFg) statusFg.textContent = "خرج يعمل؛ موصل إلى OUT+/−.";
+
+          var freqs = { sine: 1000, tri: 850, sq: 440, pulse: 1200, sweep: 2500, arb: 1733 };
+          var baseHz = freqs[mode.id] || 1000;
+          lcdMain.textContent = String(Math.round(baseHz + Math.sin(t) * 3));
+          if (lcdUnit) lcdUnit.textContent = mode.unit || "Hz";
+          return;
+        }
+
+        if (dev === "spectrum") {
+          var statusSp = panelEl.querySelector(".lab-sim-status");
+
+          if (!state.powerOn) {
+            lcdMain.textContent = " POWER ";
+            if (lcdUnit) lcdUnit.textContent = "";
+            if (statusSp) statusSp.textContent = "شغّل المحلّل لعرض الطيف.";
+            return;
+          }
+
+          if (statusSp) statusSp.textContent = "وضع العرض: " + mode.labelAr + " · غيّر النطاق من المقبض.";
+
+          var peaks = { span1: 14.2, span2: 88.5, rbw: 42.0, peak: 156.0, avg: 98.2, hold: 201.0 };
+          lcdMain.textContent = (peaks[mode.id] != null ? peaks[mode.id] : 50 + Math.sin(t) * 5).toFixed(1);
+          if (lcdUnit) lcdUnit.textContent = mode.unit || "MHz";
+        }
+      }
+
+      function setupLabSimulation(panelEl, model) {
+        const state = model.userData.labSim;
+        const dyn = panelEl && panelEl.querySelector(".lab-sim-dynamic");
+        if (!panelEl || !dyn || !state || !state.device) return () => {};
+
+        dyn.innerHTML = buildLabPanelMarkup(state.device);
+        panelEl.classList.remove("is-hidden");
+        panelEl.hidden = false;
+        model.userData.labPanelEl = panelEl;
+
+        function syncDialRotation() {
+          const dialMesh = findDialMesh(model);
+          const modes = MODE_LISTS[state.device];
+          const n = modes && modes.length ? modes.length : 1;
+          if (dialMesh) dialMesh.rotation.y = (state.modeIdx * (Math.PI * 2)) / n;
+        }
+
+        function refresh() {
+          refreshLabSimulationDisplay(panelEl, model);
+        }
+
+        const cleanup = [];
+
+        syncDevice3dFeedback(model);
+        syncDialRotation();
+        refresh();
+        drawDeviceScreen(model, panelEl);
+
+        const slowTimer = window.setInterval(refresh, 450);
+
+        let rafId = 0;
+        let stopped = false;
+        function tick() {
+          if (stopped) return;
+          drawDeviceScreen(model, panelEl);
+          rafId = window.requestAnimationFrame(tick);
+        }
+        rafId = window.requestAnimationFrame(tick);
+
+        return function () {
+          stopped = true;
+          if (rafId) window.cancelAnimationFrame(rafId);
+          window.clearInterval(slowTimer);
+          cleanup.forEach(function (fn) {
+            fn();
+          });
+          panelEl.classList.add("is-hidden");
+          panelEl.hidden = true;
+          dyn.innerHTML = "";
+          delete model.userData.labPanelEl;
+        };
+      }
+
+      function disableMeshRaycast(mesh) {
+        mesh.raycast = function () {};
+      }
+
+      function curveTube(points, radius, mat) {
+        const curve = new THREE.CatmullRomCurve3(points);
+        const geo = new THREE.TubeGeometry(curve, Math.min(48, points.length * 12), radius, 8, false);
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.castShadow = true;
+        disableMeshRaycast(mesh);
+        return mesh;
+      }
+
+      function addOscilloscopeLeads(group) {
+        const bnc = new THREE.Vector3(-0.5, 0.34, 0.82);
+        const tip = new THREE.Vector3(0.42, 1.08, 0.94);
+        const mid = bnc.clone().lerp(tip, 0.42).add(new THREE.Vector3(-0.06, 0.38, 0.05));
+        group.add(curveTube([bnc, mid, tip], 0.016, wireMatRed));
+        const bnc2 = new THREE.Vector3(0.5, 0.34, 0.82);
+        const gnd = new THREE.Vector3(0.15, 0.72, 0.96);
+        const mid2 = bnc2.clone().lerp(gnd, 0.5).add(new THREE.Vector3(0.08, 0.22, 0));
+        group.add(curveTube([bnc2, mid2, gnd], 0.014, wireMatOrange));
+      }
+
+      function addBreadboardJumpers(group) {
+        function hole(row, col) {
+          return new THREE.Vector3(-1.05 + col * 0.14, 0.29, -0.55 + row * 0.12);
+        }
+        const pairs = [
+          [hole(4, 3), hole(4, 7)],
+          [hole(6, 2), hole(8, 6)],
+          [hole(3, 11), hole(7, 13)],
+        ];
+        pairs.forEach(([a, b]) => {
+          const mid = a.clone().lerp(b, 0.5).add(new THREE.Vector3(0, 0.16, 0));
+          group.add(curveTube([a, mid, b], 0.02, wireMatOrange));
+        });
+      }
+
+      function isStateOn(state, key) {
+        if (!state || !key) return false;
+        return !!state[key];
+      }
+
+      function isJackPlugged(state, li) {
+        if (!state || !li || !li.stateKey) return false;
+        return state[li.stateKey] === li.id;
+      }
+
+      function powerStateKey(state) {
+        if (!state) return null;
+        if (state.device === "breadboard") return "bbPower";
+        return "powerOn";
+      }
+
+      function syncDevice3dFeedback(modelRoot) {
+        const state = modelRoot.userData.labSim;
+        if (!state) return;
+        const pKey = powerStateKey(state);
+        modelRoot.traverse((o) => {
+          if (!o.isMesh || !o.userData.labInteractive) return;
+          const li = o.userData.labInteractive;
+          const m = o.material;
+          if (!m || !m.emissive) return;
+          if (li.kind === "jack") {
+            const on = isJackPlugged(state, li);
+            const hex = li.role === "black" ? 0x0f172a : 0x14532d;
+            m.emissive.setHex(on ? hex : 0x000000);
+            m.emissiveIntensity = on ? 0.55 : 0;
+          } else if (li.kind === "powerBtn") {
+            const on = isStateOn(state, pKey);
+            m.emissive.setHex(on ? 0x15803d : 0x000000);
+            m.emissiveIntensity = on ? 0.6 : 0;
+          } else if (li.kind === "actionBtn") {
+            const on = isStateOn(state, li.stateKey);
+            m.emissive.setHex(on ? li.activeColor : 0x000000);
+            m.emissiveIntensity = on ? 0.55 : 0;
+          }
+        });
+      }
+
+      const syncOscilloscope3dFeedback = syncDevice3dFeedback;
+
+      function attachDeviceInteractions(camera, canvas, controls, modelRoot) {
+        let hasPickable = false;
+        modelRoot.traverse((o) => {
+          if (o.isMesh && o.userData.labInteractive) hasPickable = true;
+        });
+        if (!hasPickable) return () => {};
+
+        const raycaster = new THREE.Raycaster();
+        const ndc = new THREE.Vector2();
+
+        function clientToNDC(ev) {
+          const rect = canvas.getBoundingClientRect();
+          let cx = ev.clientX;
+          let cy = ev.clientY;
+          if ((cx == null || cy == null) && ev.touches && ev.touches[0]) {
+            cx = ev.touches[0].clientX;
+            cy = ev.touches[0].clientY;
+          }
+          if ((cx == null || cy == null) && ev.changedTouches && ev.changedTouches[0]) {
+            cx = ev.changedTouches[0].clientX;
+            cy = ev.changedTouches[0].clientY;
+          }
+          if (cx == null || cy == null) return false;
+          ndc.x = ((cx - rect.left) / rect.width) * 2 - 1;
+          ndc.y = -(((cy - rect.top) / rect.height) * 2 - 1);
+          return true;
+        }
+
+        function armControlsRelease() {
+          if (controls) controls.enabled = false;
+          function restore() {
+            if (controls) controls.enabled = true;
+            window.removeEventListener("pointerup", restore);
+            window.removeEventListener("pointercancel", restore);
+            window.removeEventListener("touchend", restore);
+          }
+          window.addEventListener("pointerup", restore);
+          window.addEventListener("pointercancel", restore);
+          window.addEventListener("touchend", restore, { passive: true });
+        }
+
+        function applyKnob(mesh, ev, modelRoot) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const spec = mesh.userData.labInteractive || {};
+          if (spec.role === "labDial" || spec.role === "mmDial") {
+            const state = findLabSimState(mesh, modelRoot);
+            if (!state || !state.device) return;
+            const modes = MODE_LISTS[state.device];
+            if (!modes || !modes.length) return;
+            state.modeIdx = (state.modeIdx + 1) % modes.length;
+            mesh.rotation.y = (state.modeIdx * (Math.PI * 2)) / modes.length;
+            const panel = modelRoot.userData.labPanelEl;
+            if (panel) refreshLabSimulationDisplay(panel, modelRoot);
+          } else {
+            const step = spec.step != null ? spec.step : 0.42;
+            const ax = spec.axis === "x" || spec.axis === "y" || spec.axis === "z" ? spec.axis : "y";
+            mesh.rotation[ax] += step;
+          }
+          armControlsRelease();
+        }
+
+        function applyJack(mesh, ev, modelRoot) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const li = mesh.userData.labInteractive;
+          if (!li || li.kind !== "jack" || !li.stateKey) return;
+          const state = modelRoot.userData.labSim;
+          if (!state) return;
+          state[li.stateKey] = state[li.stateKey] === li.id ? null : li.id;
+          syncDevice3dFeedback(modelRoot);
+          const panel = modelRoot.userData.labPanelEl;
+          if (panel) refreshLabSimulationDisplay(panel, modelRoot);
+          armControlsRelease();
+        }
+
+        function applyPower(mesh, ev, modelRoot) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const state = modelRoot.userData.labSim;
+          if (!state) return;
+          const key = powerStateKey(state);
+          if (!key) return;
+          state[key] = !state[key];
+          syncDevice3dFeedback(modelRoot);
+          const panel = modelRoot.userData.labPanelEl;
+          if (panel) refreshLabSimulationDisplay(panel, modelRoot);
+          armControlsRelease();
+        }
+
+        function applyActionBtn(mesh, ev, modelRoot) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const li = mesh.userData.labInteractive;
+          if (!li || li.kind !== "actionBtn" || !li.stateKey) return;
+          const state = modelRoot.userData.labSim;
+          if (!state) return;
+          state[li.stateKey] = !state[li.stateKey];
+          syncDevice3dFeedback(modelRoot);
+          const panel = modelRoot.userData.labPanelEl;
+          if (panel) refreshLabSimulationDisplay(panel, modelRoot);
+          armControlsRelease();
+        }
+
+        function flashPick(mesh) {
+          if (!mesh || !mesh.scale) return;
+          const sx = mesh.scale.x;
+          const sy = mesh.scale.y;
+          const sz = mesh.scale.z;
+          mesh.scale.set(sx * 0.86, sy * 0.86, sz * 0.86);
+          window.setTimeout(function () {
+            mesh.scale.set(sx, sy, sz);
+          }, 140);
+        }
+
+        function resolveInteractive(obj) {
+          let target = obj;
+          if (target.userData && target.userData.proxyTarget) target = target.userData.proxyTarget;
+          if (target.userData && target.userData.labInteractive && target.userData.labInteractive.proxy && target.userData.proxyTarget) {
+            target = target.userData.proxyTarget;
+          }
+          return target;
+        }
+
+        function tryPick(ev) {
+          if (!clientToNDC(ev)) return false;
+          raycaster.setFromCamera(ndc, camera);
+          const hits = raycaster.intersectObject(modelRoot, true);
+          const hit = hits.find((h) => h.object.userData && h.object.userData.labInteractive);
+          if (!hit) return false;
+          const target = resolveInteractive(hit.object);
+          const li = target.userData.labInteractive;
+          if (!li) return false;
+          flashPick(target);
+          if (li.kind === "knob") {
+            applyKnob(target, ev, modelRoot);
+          } else if (li.kind === "jack") {
+            applyJack(target, ev, modelRoot);
+          } else if (li.kind === "powerBtn") {
+            applyPower(target, ev, modelRoot);
+          } else if (li.kind === "actionBtn") {
+            applyActionBtn(target, ev, modelRoot);
+          } else {
+            return false;
+          }
+          return true;
+        }
+
+        function onPointerDown(ev) {
+          tryPick(ev);
+        }
+
+        function onTouchStart(ev) {
+          if (tryPick(ev)) ev.preventDefault();
+        }
+
+        function onPointerMove(ev) {
+          if (!clientToNDC(ev)) return;
+          raycaster.setFromCamera(ndc, camera);
+          const hits = raycaster.intersectObject(modelRoot, true);
+          const overHit = hits.find((h) => h.object.userData && h.object.userData.labInteractive);
+          canvas.style.cursor = overHit ? "pointer" : "";
+        }
+
+        const hasPointerEvent = typeof window.PointerEvent !== "undefined";
+        if (hasPointerEvent) {
+          canvas.addEventListener("pointerdown", onPointerDown, true);
+          canvas.addEventListener("pointermove", onPointerMove);
+        } else {
+          canvas.addEventListener("mousedown", onPointerDown, true);
+          canvas.addEventListener("touchstart", onTouchStart, { capture: true, passive: false });
+          canvas.addEventListener("mousemove", onPointerMove);
+        }
+
+        return () => {
+          if (hasPointerEvent) {
+            canvas.removeEventListener("pointerdown", onPointerDown, true);
+            canvas.removeEventListener("pointermove", onPointerMove);
+          } else {
+            canvas.removeEventListener("mousedown", onPointerDown, true);
+            canvas.removeEventListener("touchstart", onTouchStart, true);
+            canvas.removeEventListener("mousemove", onPointerMove);
+          }
+          canvas.style.cursor = "";
+        };
+      }
+
+      function makeOscilloscope() {
+        const g = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.35, 1.55), metal(0x3d6d6f));
+        body.position.y = 0.68;
+        disableMeshRaycast(body);
+        g.add(body);
+        const screen = makeScreenMesh({ w: 1.35, h: 0.82, px: 768, kind: "oscilloscope" });
+        screen.position.set(0, 1.02, 0.78);
+        disableMeshRaycast(screen);
+        g.add(screen);
+        g.userData.screen = screen.userData.screen;
+        const bezel = new THREE.Mesh(
+          new THREE.BoxGeometry(1.5, 0.95, 0.06),
+          metal(0x2a4a4d)
+        );
+        bezel.position.set(0, 1.02, 0.74);
+        disableMeshRaycast(bezel);
+        g.add(bezel);
+        const ch1Jack = makeJack({ role: "red", stateKey: "scopeRed", id: "ch1" });
+        ch1Jack.position.set(-0.85, 0.16, 0.86);
+        g.add(ch1Jack);
+        const ch1Label = makeLabel("CH1", "#fca5a5");
+        ch1Label.position.set(-0.85, -0.18, 0.9);
+        g.add(ch1Label);
+        const gndJack = makeJack({ role: "black", stateKey: "scopeBlack", id: "gnd", color: 0x111827 });
+        gndJack.position.set(0.85, 0.16, 0.86);
+        g.add(gndJack);
+        const gndLabel = makeLabel("GND", "#cbd5e1");
+        gndLabel.position.set(0.85, -0.18, 0.9);
+        g.add(gndLabel);
+        const pwr = makePowerButton({ w: 0.34, h: 0.22, d: 0.1 });
+        pwr.position.set(0, 0.16, 0.88);
+        g.add(pwr);
+        const pwrLabel = makeLabel("⏻ POWER", "#86efac");
+        pwrLabel.position.set(0, -0.18, 0.9);
+        g.add(pwrLabel);
+        const knobLabels = ["MODE", "TIME", "VOLT", "TRIG", "POS"];
+        for (let i = 0; i < 5; i++) {
+          const knob = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.18, 0.21, 0.14, 24),
+            metal(0x1e3638)
+          );
+          knob.rotation.x = Math.PI / 2;
+          knob.position.set(-0.76 + i * 0.38, 0.5, 0.86);
+          const indicator = new THREE.Mesh(
+            new THREE.BoxGeometry(0.04, 0.04, 0.13),
+            new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xeab308, emissiveIntensity: 0.5 })
+          );
+          indicator.position.set(0, 0.1, 0);
+          knob.add(indicator);
+          if (i === 0) {
+            knob.userData.labInteractive = { kind: "knob", axis: "y", step: 0, role: "labDial" };
+          } else {
+            tagKnob(knob);
+          }
+          attachHitArea(knob, 0.2);
+          g.add(knob);
+          const lbl = makeLabel(knobLabels[i], i === 0 ? "#fde68a" : "#7dd3fc");
+          lbl.position.set(-0.76 + i * 0.38, 0.78, 0.9);
+          lbl.scale.set(0.5, 0.13, 1);
+          g.add(lbl);
+        }
+        addOscilloscopeLeads(g);
+        return g;
+      }
+
+      function makeBreadboard() {
+        const g = new THREE.Group();
+        const base = new THREE.Mesh(
+          new THREE.BoxGeometry(2.4, 0.25, 1.6),
+          new THREE.MeshStandardMaterial({ color: 0xd9ebe8, roughness: 0.82 })
+        );
+        base.position.y = 0.12;
+        disableMeshRaycast(base);
+        g.add(base);
+        const groove = new THREE.Mesh(
+          new THREE.BoxGeometry(2.35, 0.08, 0.12),
+          new THREE.MeshStandardMaterial({ color: 0x0d2527, roughness: 0.9 })
+        );
+        groove.position.set(0, 0.22, 0);
+        disableMeshRaycast(groove);
+        g.add(groove);
+        const matHole = new THREE.MeshStandardMaterial({ color: 0x4a7d7f, metalness: 0.35, roughness: 0.55 });
+        for (let row = 0; row < 10; row++) {
+          for (let col = 0; col < 16; col++) {
+            if (col === 8) continue;
+            const h = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.06, 8), matHole);
+            h.position.set(-1.05 + col * 0.14, 0.26, -0.55 + row * 0.12);
+            disableMeshRaycast(h);
+            g.add(h);
+          }
+        }
+        addBreadboardJumpers(g);
+        const bbScr = makeScreenMesh({ w: 0.7, h: 0.22, px: 512, kind: "breadboard" });
+        bbScr.position.set(0.4, 0.32, 0.81);
+        bbScr.rotation.x = -Math.PI / 12;
+        disableMeshRaycast(bbScr);
+        g.add(bbScr);
+        g.userData.screen = bbScr.userData.screen;
+        const bbDial = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.12, 20), metal(0x64748b));
+        bbDial.rotation.x = Math.PI / 2;
+        bbDial.position.set(0.95, 0.42, 0);
+        const bbInd = new THREE.Mesh(
+          new THREE.BoxGeometry(0.04, 0.04, 0.16),
+          new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xeab308, emissiveIntensity: 0.5 })
+        );
+        bbInd.position.set(0, 0.13, 0);
+        bbDial.add(bbInd);
+        bbDial.userData.labInteractive = { kind: "knob", axis: "y", step: 0, role: "labDial" };
+        attachHitArea(bbDial, 0.22);
+        g.add(bbDial);
+        const bbDialLbl = makeLabel("MODE", "#fde68a");
+        bbDialLbl.position.set(0.95, 0.42, 0.36);
+        bbDialLbl.scale.set(0.4, 0.13, 1);
+        g.add(bbDialLbl);
+
+        const pwr = makePowerButton({ w: 0.32, h: 0.22, d: 0.1 });
+        pwr.position.set(-1.05, 0.32, 0.65);
+        g.add(pwr);
+        const pwrLbl = makeLabel("⏻ POWER", "#86efac");
+        pwrLbl.position.set(-1.05, 0.08, 0.66);
+        pwrLbl.scale.set(0.5, 0.13, 1);
+        g.add(pwrLbl);
+
+        const railP = makeActionButton({ stateKey: "railP", activeColor: 0x16a34a, color: 0xb91c1c, w: 0.28, h: 0.18, d: 0.09 });
+        railP.position.set(-0.7, 0.32, 0.65);
+        g.add(railP);
+        const railPLbl = makeLabel("RAIL +", "#fca5a5");
+        railPLbl.position.set(-0.7, 0.08, 0.66);
+        railPLbl.scale.set(0.4, 0.13, 1);
+        g.add(railPLbl);
+        const railN = makeActionButton({ stateKey: "railN", activeColor: 0x16a34a, color: 0x1e293b, w: 0.28, h: 0.18, d: 0.09 });
+        railN.position.set(-0.36, 0.32, 0.65);
+        g.add(railN);
+        const railNLbl = makeLabel("RAIL −", "#cbd5e1");
+        railNLbl.position.set(-0.36, 0.08, 0.66);
+        railNLbl.scale.set(0.4, 0.13, 1);
+        g.add(railNLbl);
+        const bridgeA = makeActionButton({ stateKey: "bridgeA", activeColor: 0x2563eb, w: 0.28, h: 0.18, d: 0.09 });
+        bridgeA.position.set(-0.02, 0.32, 0.65);
+        g.add(bridgeA);
+        const bridgeALbl = makeLabel("BRIDGE A", "#7dd3fc");
+        bridgeALbl.position.set(-0.02, 0.08, 0.66);
+        bridgeALbl.scale.set(0.5, 0.13, 1);
+        g.add(bridgeALbl);
+        const bridgeB = makeActionButton({ stateKey: "bridgeB", activeColor: 0x2563eb, w: 0.28, h: 0.18, d: 0.09 });
+        bridgeB.position.set(0.32, 0.32, 0.65);
+        g.add(bridgeB);
+        const bridgeBLbl = makeLabel("BRIDGE B", "#7dd3fc");
+        bridgeBLbl.position.set(0.32, 0.08, 0.66);
+        bridgeBLbl.scale.set(0.5, 0.13, 1);
+        g.add(bridgeBLbl);
+        return g;
+      }
+
+      function makeMultimeter() {
+        const g = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.5, 0.45), metal(0x356a6c));
+        body.position.y = 0.75;
+        disableMeshRaycast(body);
+        g.add(body);
+        const scr = makeScreenMesh({ w: 0.72, h: 0.42, px: 512, kind: "multimeter" });
+        scr.position.set(0, 1.05, 0.23);
+        disableMeshRaycast(scr);
+        g.add(scr);
+        g.userData.screen = scr.userData.screen;
+        const dial = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.28, 0.28, 0.1, 28),
+          metal(0x1e383a)
+        );
+        dial.rotation.x = Math.PI / 2;
+        dial.position.set(0, 0.45, 0.26);
+        dial.userData.labInteractive = { kind: "knob", axis: "y", step: 0, role: "labDial" };
+        const dialMark = new THREE.Mesh(
+          new THREE.BoxGeometry(0.05, 0.05, 0.18),
+          new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xeab308, emissiveIntensity: 0.6 })
+        );
+        dialMark.position.set(0, 0.18, 0);
+        dial.add(dialMark);
+        attachHitArea(dial, 0.22);
+        g.add(dial);
+        const dialLbl = makeLabel("MODE", "#fde68a");
+        dialLbl.position.set(0, 0.78, 0.27);
+        dialLbl.scale.set(0.55, 0.14, 1);
+        g.add(dialLbl);
+
+        const pwr = makePowerButton({ w: 0.28, h: 0.18, d: 0.1 });
+        pwr.position.set(0.34, 1.36, 0.27);
+        g.add(pwr);
+        const pwrLbl = makeLabel("⏻", "#86efac");
+        pwrLbl.position.set(0.34, 1.18, 0.28);
+        pwrLbl.scale.set(0.18, 0.18, 1);
+        g.add(pwrLbl);
+
+        const com = makeJack({ role: "black", stateKey: "mmBlack", id: "com", color: 0x111827 });
+        com.position.set(-0.36, 0.16, 0.28);
+        g.add(com);
+        const comLbl = makeLabel("COM", "#cbd5e1");
+        comLbl.position.set(-0.36, -0.06, 0.3);
+        comLbl.scale.set(0.34, 0.11, 1);
+        g.add(comLbl);
+        const vohm = makeJack({ role: "red", stateKey: "mmRed", id: "vohm" });
+        vohm.position.set(-0.12, 0.16, 0.28);
+        g.add(vohm);
+        const vohmLbl = makeLabel("VΩ", "#fca5a5");
+        vohmLbl.position.set(-0.12, -0.06, 0.3);
+        vohmLbl.scale.set(0.34, 0.11, 1);
+        g.add(vohmLbl);
+        const ma = makeJack({ role: "red", stateKey: "mmRed", id: "ma" });
+        ma.position.set(0.12, 0.16, 0.28);
+        g.add(ma);
+        const maLbl = makeLabel("mA", "#fca5a5");
+        maLbl.position.set(0.12, -0.06, 0.3);
+        maLbl.scale.set(0.34, 0.11, 1);
+        g.add(maLbl);
+        const a10 = makeJack({ role: "red", stateKey: "mmRed", id: "a10" });
+        a10.position.set(0.36, 0.16, 0.28);
+        g.add(a10);
+        const a10Lbl = makeLabel("10A", "#fca5a5");
+        a10Lbl.position.set(0.36, -0.06, 0.3);
+        a10Lbl.scale.set(0.34, 0.11, 1);
+        g.add(a10Lbl);
+        return g;
+      }
+
+      function makePowerSupply() {
+        const g = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.1, 1.2), metal(0x2f5c62));
+        body.position.y = 0.55;
+        disableMeshRaycast(body);
+        g.add(body);
+        const display = makeScreenMesh({ w: 0.9, h: 0.35, px: 512, kind: "power-supply" });
+        display.position.set(0, 0.75, 0.61);
+        disableMeshRaycast(display);
+        g.add(display);
+        g.userData.screen = display.userData.screen;
+        const knobLabels = ["MODE", "FINE"];
+        [-0.55, 0.55].forEach((x, ki) => {
+          const k = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.2, 0.22, 0.12, 24),
+            metal(0x1a3034)
+          );
+          k.rotation.x = Math.PI / 2;
+          k.position.set(x, 0.35, 0.62);
+          const ind = new THREE.Mesh(
+            new THREE.BoxGeometry(0.04, 0.04, 0.16),
+            new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xeab308, emissiveIntensity: 0.5 })
+          );
+          ind.position.set(0, 0.13, 0);
+          k.add(ind);
+          if (ki === 0) {
+            k.userData.labInteractive = { kind: "knob", axis: "y", step: 0, role: "labDial" };
+          } else {
+            tagKnob(k, 0.4);
+          }
+          attachHitArea(k, 0.22);
+          g.add(k);
+          const lbl = makeLabel(knobLabels[ki], ki === 0 ? "#fde68a" : "#7dd3fc");
+          lbl.position.set(x, 0.62, 0.63);
+          lbl.scale.set(0.45, 0.13, 1);
+          g.add(lbl);
+        });
+
+        const pwr = makePowerButton({ w: 0.32, h: 0.22, d: 0.11 });
+        pwr.position.set(1.12, 0.78, 0.65);
+        g.add(pwr);
+        const pwrLbl = makeLabel("⏻", "#86efac");
+        pwrLbl.position.set(1.12, 0.55, 0.66);
+        pwrLbl.scale.set(0.18, 0.18, 1);
+        g.add(pwrLbl);
+
+        const out = makeActionButton({ stateKey: "outputOn", activeColor: 0x16a34a, w: 0.32, h: 0.2, d: 0.11 });
+        out.position.set(1.12, 0.4, 0.65);
+        g.add(out);
+        const outLbl = makeLabel("OUTPUT", "#86efac");
+        outLbl.position.set(1.12, 0.18, 0.66);
+        outLbl.scale.set(0.5, 0.13, 1);
+        g.add(outLbl);
+
+        const plus = makeJack({ role: "red", stateKey: "psuRed", id: "plus" });
+        plus.position.set(0.28, 0.12, 0.66);
+        g.add(plus);
+        const plusLbl = makeLabel("+", "#fca5a5");
+        plusLbl.position.set(0.28, -0.1, 0.68);
+        plusLbl.scale.set(0.18, 0.18, 1);
+        g.add(plusLbl);
+        const minus = makeJack({ role: "black", stateKey: "psuBlack", id: "minus", color: 0x111827 });
+        minus.position.set(-0.28, 0.12, 0.66);
+        g.add(minus);
+        const minusLbl = makeLabel("−", "#cbd5e1");
+        minusLbl.position.set(-0.28, -0.1, 0.68);
+        minusLbl.scale.set(0.18, 0.18, 1);
+        g.add(minusLbl);
+        return g;
+      }
+
+      function makeFunctionGenerator() {
+        const g = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.95, 1.35), metal(0x3a6366));
+        body.position.y = 0.48;
+        disableMeshRaycast(body);
+        g.add(body);
+        const scr = makeScreenMesh({ w: 1.1, h: 0.55, px: 640, kind: "function-generator" });
+        scr.position.set(0, 0.62, 0.68);
+        disableMeshRaycast(scr);
+        g.add(scr);
+        g.userData.screen = scr.userData.screen;
+        const fgLabels = ["WAVE", "FREQ", "AMP", "OFFS"];
+        for (let i = 0; i < 4; i++) {
+          const k = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.16, 0.18, 0.1, 20),
+            metal(0x243a3d)
+          );
+          k.rotation.x = Math.PI / 2;
+          k.position.set(-0.55 + i * 0.36, 0.28, 0.72);
+          const ind = new THREE.Mesh(
+            new THREE.BoxGeometry(0.03, 0.03, 0.13),
+            new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xeab308, emissiveIntensity: 0.5 })
+          );
+          ind.position.set(0, 0.11, 0);
+          k.add(ind);
+          if (i === 0) {
+            k.userData.labInteractive = { kind: "knob", axis: "y", step: 0, role: "labDial" };
+          } else {
+            tagKnob(k);
+          }
+          attachHitArea(k, 0.22);
+          g.add(k);
+          const lbl = makeLabel(fgLabels[i], i === 0 ? "#fde68a" : "#7dd3fc");
+          lbl.position.set(-0.55 + i * 0.36, 0.05, 0.74);
+          lbl.scale.set(0.4, 0.12, 1);
+          g.add(lbl);
+        }
+
+        const pwr = makePowerButton({ w: 0.28, h: 0.2, d: 0.1 });
+        pwr.position.set(0.78, 0.7, 0.72);
+        g.add(pwr);
+        const pwrLbl = makeLabel("⏻", "#86efac");
+        pwrLbl.position.set(0.78, 0.5, 0.73);
+        pwrLbl.scale.set(0.16, 0.16, 1);
+        g.add(pwrLbl);
+
+        const out = makeActionButton({ stateKey: "outputOn", activeColor: 0x16a34a, w: 0.28, h: 0.18, d: 0.1 });
+        out.position.set(0.78, 0.36, 0.72);
+        g.add(out);
+        const outLbl = makeLabel("OUT", "#86efac");
+        outLbl.position.set(0.78, 0.16, 0.73);
+        outLbl.scale.set(0.34, 0.13, 1);
+        g.add(outLbl);
+
+        const outp = makeJack({ role: "red", stateKey: "fgRed", id: "outp" });
+        outp.position.set(-0.78, 0.7, 0.73);
+        g.add(outp);
+        const outpLbl = makeLabel("+", "#fca5a5");
+        outpLbl.position.set(-0.78, 0.5, 0.74);
+        outpLbl.scale.set(0.16, 0.16, 1);
+        g.add(outpLbl);
+        const outn = makeJack({ role: "black", stateKey: "fgBlack", id: "outn", color: 0x111827 });
+        outn.position.set(-0.78, 0.36, 0.73);
+        g.add(outn);
+        const outnLbl = makeLabel("−", "#cbd5e1");
+        outnLbl.position.set(-0.78, 0.16, 0.74);
+        outnLbl.scale.set(0.16, 0.16, 1);
+        g.add(outnLbl);
+        return g;
+      }
+
+      function makeSpectrum() {
+        const g = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.15, 1.5), metal(0x35585b));
+        body.position.y = 0.58;
+        disableMeshRaycast(body);
+        g.add(body);
+        const scr = makeScreenMesh({ w: 1.85, h: 0.75, px: 768, kind: "spectrum" });
+        scr.position.set(0, 0.72, 0.76);
+        disableMeshRaycast(scr);
+        g.add(scr);
+        g.userData.screen = scr.userData.screen;
+        for (let i = 0; i < 6; i++) {
+          const k = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.14, 0.16, 0.08, 20),
+            metal(0x1c3235)
+          );
+          k.rotation.x = Math.PI / 2;
+          k.position.set(-0.7 + i * 0.28, 0.3, 0.8);
+          const ind = new THREE.Mesh(
+            new THREE.BoxGeometry(0.03, 0.03, 0.11),
+            new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xeab308, emissiveIntensity: 0.5 })
+          );
+          ind.position.set(0, 0.09, 0);
+          k.add(ind);
+          if (i === 0) {
+            k.userData.labInteractive = { kind: "knob", axis: "y", step: 0, role: "labDial" };
+          } else {
+            tagKnob(k, 0.38);
+          }
+          attachHitArea(k, 0.18);
+          g.add(k);
+        }
+        const dialLbl = makeLabel("RANGE", "#fde68a");
+        dialLbl.position.set(-0.7, 0.07, 0.81);
+        dialLbl.scale.set(0.5, 0.13, 1);
+        g.add(dialLbl);
+
+        const pwr = makePowerButton({ w: 0.3, h: 0.2, d: 0.1 });
+        pwr.position.set(1.0, 0.2, 0.8);
+        g.add(pwr);
+        const pwrLbl = makeLabel("⏻ POWER", "#86efac");
+        pwrLbl.position.set(1.0, -0.02, 0.81);
+        pwrLbl.scale.set(0.5, 0.13, 1);
+        g.add(pwrLbl);
+        return g;
+      }
+
+      const builders = {
+        oscilloscope: makeOscilloscope,
+        breadboard: makeBreadboard,
+        multimeter: makeMultimeter,
+        "power-supply": makePowerSupply,
+        "function-generator": makeFunctionGenerator,
+        spectrum: makeSpectrum,
+      };
+
+      function buildDevice(type) {
+        const fn = builders[type] || builders.oscilloscope;
+        const root = fn();
+        root.traverse((o) => {
+          if (o.isMesh) o.castShadow = true;
+        });
+        return root;
+      }
+
+      function normalizeImportedModel(root) {
+        root.updateMatrixWorld(true);
+        const box = new THREE.Box3().setFromObject(root);
+        if (box.isEmpty()) return;
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const target = 2.4;
+        if (maxDim > 1e-6 && Number.isFinite(maxDim)) {
+          root.scale.multiplyScalar(target / maxDim);
+        }
+        root.updateMatrixWorld(true);
+        const box2 = new THREE.Box3().setFromObject(root);
+        const center = new THREE.Vector3();
+        box2.getCenter(center);
+        root.position.sub(center);
+      }
+
+      async function loadDeviceRoot(type) {
+        const slug = String(type || "oscilloscope").trim();
+        const url = `models/${encodeURIComponent(slug)}.glb`;
+        try {
+          const gltf = await new Promise((resolve, reject) => {
+            gltfLoader.load(url, resolve, undefined, reject);
+          });
+          const root = gltf.scene;
+          normalizeImportedModel(root);
+          root.traverse((o) => {
+            if (o.isMesh) {
+              o.castShadow = true;
+              if (o.material && !Array.isArray(o.material)) {
+                o.material.needsUpdate = true;
+              }
+              if (o.name && /knob|dial|rotary|button|potentiometer/i.test(o.name)) {
+                o.userData.labInteractive = { kind: "knob", axis: "y", step: 0.35 };
+              } else if (o.name && /^(body|case|screen|bezel|housing|chassis|display|glass)/i.test(o.name)) {
+                disableMeshRaycast(o);
+              }
+            }
+          });
+          return root;
+        } catch (err) {
+          console.info("LabGuide: no GLB or load failed, procedural fallback:", slug, err && err.message ? err.message : err);
+          return buildDevice(slug);
+        }
+      }
+
+      function installWebglFallback(container) {
+        container.replaceChildren();
+        const div = document.createElement("div");
+        div.className = "webgl-fallback-msg";
+        div.dir = "rtl";
+        div.innerHTML =
+          "<p><strong>تعذّر تشغيل العرض ثلاثي الأبعاد على هذا الجهاز</strong></p>" +
+          "<p>جرّب تحديث الصفحة أو التحقق من تحديث المتصفح / نظام التشغيل. يمكنك متابعة خطوات التدريب أسفل هذه المنطقة.</p>";
+        container.appendChild(div);
+      }
+
+      async function setupScene(container, type, interactive, sizeOverride) {
+        const ow = sizeOverride && sizeOverride.w;
+        const oh = sizeOverride && sizeOverride.h;
+        let w = ow != null ? ow : container.clientWidth || container.offsetWidth;
+        let h = oh != null ? oh : container.clientHeight || container.offsetHeight;
+        if (!w || w < 32) w = Math.max(280, window.innerWidth ? Math.min(window.innerWidth - 40, 360) : 320);
+        if (!h || h < 32) h = 210;
+
+        w = Math.max(32, w);
+        h = Math.max(32, h);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xdbe8f4);
+
+        const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+        camera.position.set(1.6, 1.5, 3.6);
+
+        const renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: false,
+          failIfMajorPerformanceCaveat: false,
+          powerPreference: "default",
+        });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, interactive ? 2 : 1.5));
+        renderer.setSize(w, h, false);
+        renderer.shadowMap.enabled = true;
+        const canvas = renderer.domElement;
+        canvas.style.display = "block";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        container.appendChild(canvas);
+
+        const amb = new THREE.AmbientLight(0xffffff, 0.72);
+        scene.add(amb);
+        const dir = new THREE.DirectionalLight(0xffffff, 1);
+        dir.position.set(4, 8, 6);
+        scene.add(dir);
+        const fill = new THREE.DirectionalLight(0xa8d4e6, 0.55);
+        fill.position.set(-3, 3, -2);
+        scene.add(fill);
+
+        const model = await loadDeviceRoot(type);
+        scene.add(model);
+        try { container.__labModel = model; } catch (e) {}
+
+        const deviceType = String(type || "").trim();
+        if (LAB_SIM_TYPES.has(deviceType)) {
+          model.userData.labSim = createLabSimState(deviceType);
+          let assignedDial = false;
+          model.traverse((o) => {
+            if (assignedDial) return;
+            if (o.isMesh && o.userData.labInteractive && o.userData.labInteractive.kind === "knob") {
+              const li = o.userData.labInteractive;
+              if (!li.role || li.role === "mmDial") {
+                li.role = "labDial";
+              }
+              assignedDial = true;
+            }
+          });
+        }
+
+        let controls = null;
+        if (interactive) {
+          controls = new OrbitControls(camera, renderer.domElement);
+          controls.enableDamping = true;
+          controls.dampingFactor = 0.06;
+          controls.minDistance = 1.4;
+          controls.maxDistance = 8;
+          controls.target.set(0, 0.55, 0);
+          controls.update();
+        } else {
+          camera.lookAt(0, 0.55, 0);
+        }
+
+        let detachInteractions = () => {};
+        if (interactive) {
+          detachInteractions = attachDeviceInteractions(camera, canvas, controls, model);
+        }
+
+        let labSimDispose = () => {};
+        const panelEl =
+          container.parentElement &&
+          (container.parentElement.querySelector(".lab-sim-panel") ||
+            container.parentElement.querySelector(".multimeter-panel"));
+        if (panelEl) {
+          if (LAB_SIM_TYPES.has(deviceType)) {
+            labSimDispose = setupLabSimulation(panelEl, model);
+          } else {
+            panelEl.classList.add("is-hidden");
+            panelEl.hidden = true;
+          }
+        }
+
+        let autoRotate = false;
+        let raf = 0;
+        const tick = () => {
+          raf = requestAnimationFrame(tick);
+          if (controls) {
+            controls.autoRotate = autoRotate;
+            controls.autoRotateSpeed = 1.2;
+            controls.update();
+          }
+          renderer.render(scene, camera);
+        };
+        tick();
+
+        let ro = null;
+        if (typeof ResizeObserver !== "undefined") {
+          ro = new ResizeObserver(() => {
+            const cw = container.clientWidth;
+            const ch = container.clientHeight;
+            if (cw < 2 || ch < 2) return;
+            camera.aspect = cw / ch;
+            camera.updateProjectionMatrix();
+            renderer.setSize(cw, ch);
+          });
+          ro.observe(container);
+        }
+
+        return {
+          renderer,
+          scene,
+          camera,
+          controls,
+          setAutoRotate(v) {
+            autoRotate = v;
+          },
+          resetView() {
+            camera.position.set(1.6, 1.5, 3.6);
+            if (controls) {
+              controls.target.set(0, 0.55, 0);
+              controls.update();
+            } else {
+              camera.lookAt(0, 0.55, 0);
+            }
+          },
+          zoomToggle() {
+            const target = controls ? controls.target.clone() : new THREE.Vector3(0, 0.55, 0);
+            const dir = camera.position.clone().sub(target);
+            const len = dir.length();
+            const newLen = len < 4.2 ? 5.4 : 3.1;
+            dir.normalize().multiplyScalar(newLen);
+            camera.position.copy(target).add(dir);
+            if (controls) controls.update();
+          },
+          dispose() {
+            cancelAnimationFrame(raf);
+            labSimDispose();
+            detachInteractions();
+            if (ro) ro.disconnect();
+            renderer.dispose();
+            if (controls) controls.dispose();
+          },
+        };
+      }
+
+      const instances = new Map();
+
+      function dispose3DIn(root) {
+        root.querySelectorAll("[data-device-3d]").forEach((el) => {
+          const api = instances.get(el);
+          if (api) {
+            api.dispose();
+            instances.delete(el);
+          }
+          el.replaceChildren();
+        });
+        delete root.dataset.stepWired;
+      }
+
+      function wireStepButtons(section) {
+        if (section.dataset.stepWired) return;
+        const machine = section.querySelector(".machine[data-3d-interactive]");
+        if (!machine) return;
+        const api = instances.get(machine);
+        if (!api || !api.controls) return;
+        const nav = section.querySelector(".bottom-nav");
+        if (!nav) return;
+        nav.querySelectorAll("button").forEach((btn) => {
+          const t = (btn.textContent || "").trim();
+          if (t === "Rotate") {
+            let on = false;
+            btn.addEventListener("click", () => {
+              on = !on;
+              api.setAutoRotate(on);
+            });
+          } else if (t === "Zoom") {
+            btn.addEventListener("click", () => api.zoomToggle());
+          } else if (t === "Reset") {
+            btn.addEventListener("click", () => {
+              api.setAutoRotate(false);
+              api.resetView();
+            });
+          }
+        });
+        section.dataset.stepWired = "1";
+      }
+
+      function init3DIn(root) {
+        root.querySelectorAll("[data-device-3d]").forEach((el) => {
+          if (instances.has(el)) return;
+
+          let resizeObs = null;
+
+          const run = async () => {
+            if (instances.has(el)) return;
+            const type = el.getAttribute("data-device-3d");
+            const interactive = el.getAttribute("data-3d-interactive") === "1";
+            const cw = el.clientWidth || el.offsetWidth;
+            const ch = el.clientHeight || el.offsetHeight;
+            const sz =
+              cw >= 32 && ch >= 32 ? { w: cw, h: ch } : { w: Math.max(280, cw || 320), h: ch >= 32 ? ch : 210 };
+            try {
+              const api = await setupScene(el, type, interactive, sz);
+              instances.set(el, api);
+              if (resizeObs) {
+                resizeObs.disconnect();
+                resizeObs = null;
+              }
+              const section = el.closest(".phone");
+              if (section) wireStepButtons(section);
+            } catch (err) {
+              console.warn("LabGuide WebGL:", err);
+              if (resizeObs) {
+                resizeObs.disconnect();
+                resizeObs = null;
+              }
+              installWebglFallback(el);
+            }
+          };
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(run);
+          });
+          setTimeout(run, 160);
+          setTimeout(run, 420);
+          setTimeout(run, 900);
+
+          if (typeof ResizeObserver !== "undefined") {
+            resizeObs = new ResizeObserver(() => {
+              const cw = el.clientWidth || el.offsetWidth;
+              const ch = el.clientHeight || el.offsetHeight;
+              if (cw >= 32 && ch >= 32) run();
+            });
+            resizeObs.observe(el);
+          }
+        });
+      }
+
+      window.__labGuide3D = { initIn: init3DIn, disposeIn: dispose3DIn };
+      const _labGuideActive3d = document.querySelector("#appScreens .phone.is-active");
+      if (_labGuideActive3d) init3DIn(_labGuideActive3d);
+    </script>
+    <script>
+      (function () {
+        function dispose3d(root) {
+          var g = window.__labGuide3D;
+          if (g && typeof g.disposeIn === "function") g.disposeIn(root);
+        }
+        function init3d(root) {
+          var g = window.__labGuide3D;
+          if (g && typeof g.initIn === "function") g.initIn(root);
+        }
+
+        const appScreens = document.getElementById("appScreens");
+        if (!appScreens) return;
+
+        let navStack = ["splash"];
+        let lastSpecialty = "electric";
+
+        const DEVICE_CATALOG = {
+        electric: {
+          title: "الهندسة الكهربائية",
+          devices: [
+            { mode: "mode-oscillo", model: "oscilloscope", title: "راسم الإشارة (Oscilloscope)", titleShort: "راسم الإشارة", muted: "عرض الجهد والتردد على الشاشة", notes: "رأس المجس CH1/CH2؛ الأرضي GND. لا تتجاوز جهد الدخل. اضبط V/div والزمن/قسمة." },
+            { mode: "mode-lab", model: "breadboard", title: "لوحة التجارب (Breadboard)", titleShort: "لوحة التجارب", muted: "تجميع الدائرة بدون لحام", notes: "الصفوف الطولية موصولة؛ الخندق يفصل الجانبين. تحقق من المسار قبل التغذية." },
+            { mode: "mode-lab", model: "multimeter", title: "جهاز القياس المتعدد (Multimeter)", titleShort: "القياس المتعدد", muted: "جهد، تيار، مقاومة", notes: "اختر الوضع (تيار متردد/تيار مستمر/أوم/أمبير) قبل التوصيل. للتيار: التسلسل لا التوازي." },
+            { mode: "mode-lab", model: "power-supply", title: "مصدر الطاقة (DC)", titleShort: "مصدر الطاقة", muted: "جهد وتيار قابلان للضبط", notes: "اضبط حد التيار إن وُجد. تجنب قصر المخرج." },
+            { mode: "mode-lab", model: "function-generator", title: "مولد الإشارة", titleShort: "مولد الإشارة", muted: "جيبي، مربع، مثلث", notes: "اضبط السعة والتردد والإزاحة. راجع حمل المخرج." },
+            { mode: "mode-lab", model: "spectrum", title: "محلل الطيف", titleShort: "محلل الطيف", muted: "مكوّنات التردد", notes: "راجع دخل الجهاز و RBW لقراءة أوضح." },
+          ],
+        },
+        mechanical: {
+          title: "الهندسة الميكانيكية",
+          devices: [
+            { mode: "mode-lab", model: "oscilloscope", title: "مخرطة معملية (نموذج)", titleShort: "مخرطة معملية", muted: "تشغيل آمن وضبط سرعة", notes: "ثبّت القطعة؛ استخدم واقيات؛ لا تتجاوز السرعة الموصى بها." },
+            { mode: "mode-lab", model: "multimeter", title: "ميكروميتر", titleShort: "ميكروميتر", muted: "قياس أبعاد دقيقة", notes: "أغلق بمعدل ثابت؛ صفّر قبل القياس؛ لا تضغط زائداً على المِسْطَرة." },
+            { mode: "mode-lab", model: "function-generator", title: "منشار ترددي", titleShort: "منشار ترددي", muted: "قطع مواد محددة", notes: "ثبّت المادة؛ انتظر الوصول للسرعة الكاملة؛ نظّف المنطقة." },
+            { mode: "mode-lab", model: "power-supply", title: "جهاز قص القضبان", titleShort: "قص القضبان", muted: "قطع معدنية بزاوية ثابتة", notes: "استخدم نظارات؛ تأكد من تثبيت المشبك؛ لا تضع اليد قرب الشفرة." },
+            { mode: "mode-lab", model: "breadboard", title: "لوحة تثبيت القطع", titleShort: "لوحة التثبيت", muted: "تجميع نماذج صغيرة", notes: "وزّع الأحمال؛ استخدم براغي مناسبة لسمك القطعة." },
+            { mode: "mode-lab", model: "spectrum", title: "محلل اهتزاز تعليمي", titleShort: "تحليل اهتزاز", muted: "قراءة ترددات الاهتزاز", notes: "ثبّت الحساس؛ راجع نطاق القياس قبل التسجيل." },
+          ],
+        },
+        civil: {
+          title: "الهندسة المدنية",
+          devices: [
+            { mode: "mode-lab", model: "power-supply", title: "جهاز ضغط المكعبات", titleShort: "ضغط المكعبات", muted: "اختبار مقاومة الخرسانة", notes: "حمّل تدريجياً؛ لا تتجاوز سعة الجهاز؛ سجّل القيم عند الانكسار." },
+            { mode: "mode-lab", model: "breadboard", title: "خلاطة هاون", titleShort: "خلاطة هاون", muted: "خلط مواد بنسب محددة", notes: "التزم بالزمن والماء؛ نظّف الوعاء بعد الاستخدام." },
+            { mode: "mode-lab", model: "multimeter", title: "جهاز جروس للكثافة", titleShort: "كثافة الركام", muted: "حجم وحجم مُشبع", notes: "جفّف العينة إن طلب البروتوكول؛ سجّل الكتل بعناية." },
+            { mode: "mode-lab", model: "oscilloscope", title: "جهاز حدود أتربة (عرض)", titleShort: "حدود أتربة", muted: "قراءة منحنى اللدونة", notes: "اضبط سرعة الاختراق؛ راقب منحنى الجهد/الزمن حسب المخبر." },
+            { mode: "mode-lab", model: "function-generator", title: "مقياس انكسار", titleShort: "مقياس الانكسار", muted: "زاوية حدّية للتربة", notes: "اهز العلبة بعد الطبقات؛ اقرأ الزاوية عند الانهيار." },
+            { mode: "mode-lab", model: "spectrum", title: "قالب خرسانة عملي", titleShort: "قالب خرسانة", muted: "صبّ ودمك نموذجي", notes: "ادهن القالب؛ اهتز لتفادي الفجوات؛ اتبع زمن الجفاف." },
+          ],
+        },
+        chemical: {
+          title: "الهندسة الكيميائية",
+          devices: [
+            { mode: "mode-lab", model: "breadboard", title: "مفاعل زجاجي (تجميع)", titleShort: "مفاعل زجاجي", muted: "تفاعل بكميات صغيرة", notes: "استخدم نظارات وقفازات؛ تهوية جيدة؛ سخّن تدريجياً." },
+            { mode: "mode-lab", model: "multimeter", title: "ميزان تحليلي", titleShort: "ميزان تحليلي", muted: "كتل بدقة عالية", notes: "أغلق الحجاب؛ صفّر؛ لا تلمس الأطباق بالأصابع." },
+            { mode: "mode-lab", model: "oscilloscope", title: "ماصة كهربائية / pH متر", titleShort: "قياس pH", muted: "معايرة قبل القياس", notes: "اغسل القطب؛ معايرة بمحلولين على الأقل؛ خزّن الرطوبة المناسبة." },
+            { mode: "mode-lab", model: "power-supply", title: "حمام مائي / تسخين", titleShort: "حمام مائي", muted: "ضبط درجة حرارة ثابتة", notes: "لا تترك بدون مراقبة؛ تجنب الماء داخل الأجهزة الكهربائية." },
+            { mode: "mode-lab", model: "spectrum", title: "محلل طيفي تعليمي", titleShort: "طيف UV-Vis", muted: "امتصاص حسب الطول الموجي", notes: "استخدم كوفت مناسبة؛ امسح الخلايا؛ ابدأ بمعايرة فارغ." },
+            { mode: "mode-lab", model: "function-generator", title: "مولد غاز بسيط (عرض)", titleShort: "توليد غاز", muted: "تدفق وضغط منخفض", notes: "تحقق من تسرب الغاز؛ استخدم فخ ماء عند الحاجة." },
+          ],
+        },
+        industrial: {
+          title: "الهندسة الصناعية",
+          devices: [
+            { mode: "mode-lab", model: "breadboard", title: "نمذجة خط تجميع", titleShort: "خط تجميع", muted: "محطات وزمن تخمين", notes: "وزّع العمل؛ قِس زمن الدورة لكل محطة." },
+            { mode: "mode-lab", model: "function-generator", title: "مخطط زمن عمليات", titleShort: "زمن العمليات", muted: "Gantt / مسار حرج", notes: "حدّد المهام الحرجة؛ حدّث التقدم الفعلي." },
+            { mode: "mode-lab", model: "spectrum", title: "مراقبة جودة (SPC)", titleShort: "SPC", muted: "مخططات انحراف", notes: "اجمع عينات منتظمة؛ حدد حدود التحكم إحصائياً." },
+            { mode: "mode-lab", model: "oscilloscope", title: "محاكاة زمن دورة", titleShort: "زمن الدورة", muted: "قياس فترات العمل", notes: "زامن بداية ونهاية كل مرحلة؛ قارن بالمعيار." },
+            { mode: "mode-lab", model: "multimeter", title: "لوحة PLC مصغّرة", titleShort: "PLC", muted: "مدخلات ومخرجات", notes: "تحقق من الجهد المنطقي؛ وثّق البرنامج قبل التشغيل." },
+            { mode: "mode-lab", model: "power-supply", title: "تحليل فقدان الإنتاج", titleShort: "فقدان الإنتاج", muted: "توقفات ونفايات", notes: "صنّف الأسباب؛ ربط بالوقت الفعلي للخط." },
+          ],
+        },
+        computer: {
+          title: "هندسة الحاسب",
+          devices: [
+            { mode: "mode-lab", model: "breadboard", thumb: "arduino", title: "لوحة تطوير (Arduino/مماثل)", titleShort: "لوحة تطوير", muted: "مدخلات/مخرجات رقمية", notes: "تحقق من الفولط قبل USB؛ لا تلمس الدبوس تحت جهد." },
+            { mode: "mode-lab", model: "oscilloscope", title: "محلل إشارة منطق", titleShort: "محلل منطق", muted: "عرض مستويات رقمية", notes: "اضبط عتبة المشغّل؛ راقب التردد والزمن." },
+            { mode: "mode-lab", model: "spectrum", title: "مختبر شبكات صغير", titleShort: "شبكات", muted: "محولات ومسارات", notes: "وثّق عناوين IP؛ راقب التأخير والفقد." },
+            { mode: "mode-lab", model: "power-supply", title: "مصدر طاقة للمعمل", titleShort: "مصدر طاقة", muted: "5V/3.3V للدوائر", notes: "حدّد التيار الأقصى؛ تجنب القصر على الحافلة." },
+            { mode: "mode-lab", model: "function-generator", title: "مولد نبضات", titleShort: "مولد نبضات", muted: "ساعة وتردد للاختبار", notes: "طابق مستوى الجهد مع منطق الدائرة." },
+            { mode: "mode-lab", model: "multimeter", title: "جهاز قياس متعدد للمعمل", titleShort: "قياس متعدد", muted: "فحص الدوائر", notes: "فحص التواصل؛ قياس الجهد تحت الحمل بحذر." },
+          ],
+        },
+      };
+
+      const TRAINING_STEPS = {
+        oscilloscope: [
+          { num: "1 / 5", main: "على راسم الإشارة: وصّل مجس القناة 1 (CH1) في المدخل المقابل", notes: "تأكد أن مفتاح CH1 مفعّل وأن المجس على 1× إن لزم." },
+          { num: "3 / 5", main: "على غرابيل الجهد العمودي (V/div): اضبط المقياس حتى تظهر الإشارة بوضوح (~5V ذروة)", notes: "الجهد = الأقسام × V/div؛ راجع مفتاح المجس 1×/10×." },
+          { num: "5 / 5", main: "ممتاز! الإشارة مستقرة على الشاشة", notes: "قبل الفصل: أوقف التغذية ثم افصل المجس من CH1." },
+        ],
+        breadboard: [
+          { num: "1 / 5", main: "حدّد سكتي التغذية (+/−) ووصّلها دون قصر", notes: "الصفوف الطولية عادة موصولة؛ راجع الخندق الأوسط." },
+          { num: "3 / 5", main: "أدخل المكوّنات في نفس الصف لنفس العقدة", notes: "لا تخلط بين جهدين مختلفين على نفس العقدة دون قصد." },
+          { num: "5 / 5", main: "تحقق بصرياً ثم شغّل التغذية المنخفضة", notes: "راقب الحرارة؛ افصل فور أي دخان أو رائحة." },
+        ],
+        multimeter: [
+          { num: "1 / 5", main: "اضبط المفتاح على النطاق والوضع الصحيح (V أو Ω)", notes: "للتيار: التسلسل فقط، وليس التوازي." },
+          { num: "3 / 5", main: "وصّل الطرفين على النقاط المطلوبة للقراءة", notes: "للجهد AC/DC اختر الرمز الصحيح." },
+          { num: "5 / 5", main: "سجّل القراءة واعد المفتاح لوضع آمن", notes: "أطفئ الجهاز أو ضع الغطاء عند الانتهاء." },
+        ],
+        "power-supply": [
+          { num: "1 / 5", main: "اضبط الجهد والتيار الأقصى قبل التوصيل", notes: "ابدأ بتيار محدود؛ راقب مؤشر القصر." },
+          { num: "3 / 5", main: "وصّل القطبين (+/−) على الحمل بشكل صحيح", notes: "لا تعكس القطبية على دوائر حساسة." },
+          { num: "5 / 5", main: "تحقق من قراءة الجهد تحت الحمل", notes: "أوقف المخرج قبل فك الأسلاك." },
+        ],
+        "function-generator": [
+          { num: "1 / 5", main: "اضبط الشكل الموجي والتردد الأساسي", notes: "تأكد أن السعة مناسبة لمدخل الجهاز التالي." },
+          { num: "3 / 5", main: "اضبط الإزاحة (Offset) إن لزم", notes: "لا تتجاوز جهد الدخل المسموح للراسم أو الدائرة." },
+          { num: "5 / 5", main: "تحقق من الإشارة على الراسم أو المستقبل", notes: "أعد المخرج إلى صفر قبل الفصل." },
+        ],
+        spectrum: [
+          { num: "1 / 5", main: "اضبط نطاق التردد و RBW المناسب", notes: "راجع مستوى الدخل؛ استخدم تخفيف إن لزم." },
+          { num: "3 / 5", main: "اضبط مركز القمة أو المؤشر على التردد المطلوب", notes: "انتظر استقرار القياس." },
+          { num: "5 / 5", main: "سجّل القراءة أو لقطة الشاشة", notes: "أعد الجهاز لوضع الاستعداد." },
+        ],
+        default: [
+          { num: "1 / 5", main: "راجع ترقيم المنافذ والأسلاك حسب دليل المخبر", notes: "تأكد من إيقاف الطاقة قبل أي توصيل إن طُلب ذلك." },
+          { num: "3 / 5", main: "اضبط المقاييس أو الأوزان حسب خطوة التجربة", notes: "لا تتجاوز الحدود الظاهرة على الجهاز." },
+          { num: "5 / 5", main: "سجّل القراءات واعد الجهاز للوضع الآمن", notes: "نظّف منطقة العمل قبل المغادرة." },
+        ],
+      };
+
+      function renderDevices(specialtyKey) {
+        const key = String(specialtyKey || "electric").trim();
+        let cat = DEVICE_CATALOG[key];
+        if (!cat) cat = DEVICE_CATALOG.electric;
+        const root = appScreens.querySelector("#devicesListRoot");
+        const titleEl = appScreens.querySelector("#devicesScreenTitle");
+        if (!root) return;
+        if (titleEl) titleEl.textContent = cat.title || "المختبر";
+        root.replaceChildren();
+        cat.devices.forEach((d) => {
+          const card = document.createElement("div");
+          card.className = "lab-card";
+          card.setAttribute("data-screen-go", d.mode);
+          if (d.mode === "mode-lab") {
+            card.setAttribute("data-lab-device", d.model);
+            card.setAttribute("data-lab-title", d.titleShort);
+          }
+          const thumb = document.createElement("div");
+          thumb.className = "thumb thumb--device-thumb";
+          const img = document.createElement("img");
+          img.className = "thumb-img";
+          img.alt = "";
+          img.draggable = false;
+          img.decoding = "async";
+          img.loading = "lazy";
+          const thumbSlug = d.thumb || d.model;
+          img.src = "assets/devices/" + encodeURIComponent(thumbSlug) + ".svg";
+          img.addEventListener("error", function () {
+            thumb.classList.remove("thumb--device-thumb");
+            thumb.classList.add("thumb--list-placeholder");
+            img.remove();
+          });
+          thumb.appendChild(img);
+          const label = document.createElement("div");
+          label.className = "label";
+          label.textContent = d.title;
+          const muted = document.createElement("div");
+          muted.className = "muted";
+          muted.textContent = d.muted;
+          const notes = document.createElement("div");
+          notes.className = "device-notes";
+          const strong = document.createElement("strong");
+          strong.textContent = "ملاحظات على الجهاز";
+          notes.appendChild(strong);
+          notes.appendChild(document.createTextNode(" " + d.notes));
+          card.appendChild(thumb);
+          card.appendChild(label);
+          card.appendChild(muted);
+          card.appendChild(notes);
+          root.appendChild(card);
+        });
+      }
+
+      function getScreenEl(id) {
+        return appScreens.querySelector(`[data-screen="${id}"]`);
+      }
+
+      function applyTrainingPanels(model) {
+        const steps = TRAINING_STEPS[model] || TRAINING_STEPS.default;
+        ["train3d1", "train3d2", "train3d3"].forEach((sid, i) => {
+          const sec = getScreenEl(sid);
+          if (!sec || !steps[i]) return;
+          const s = steps[i];
+          const num = sec.querySelector(".train-step-num");
+          const main = sec.querySelector(".train-step-main");
+          const notes = sec.querySelector(".train-step-notes");
+          if (num) num.textContent = s.num;
+          if (main) main.textContent = s.main;
+          if (notes) {
+            notes.textContent = "";
+            notes.appendChild(document.createTextNode(s.notes));
+          }
+        });
+      }
+
+      function stopARCameraFlow() {
+        const v = document.getElementById("arCameraDemo");
+        if (!v) return;
+        if (v.srcObject) {
+          v.srcObject.getTracks().forEach((t) => t.stop());
+          v.srcObject = null;
+        }
+        v.classList.remove("is-hidden");
+        const wrap = v.closest(".ar-viewport");
+        const fb = wrap && wrap.querySelector(".ar-feed-fallback");
+        if (fb) fb.classList.remove("is-visible");
+      }
+
+      function startARCameraFlow() {
+        const v = document.getElementById("arCameraDemo");
+        if (!v) return;
+        const wrap = v.closest(".ar-viewport");
+        const fb = wrap && wrap.querySelector(".ar-feed-fallback");
+        function useFallback() {
+          v.classList.add("is-hidden");
+          if (fb) fb.classList.add("is-visible");
+        }
+        if (v.srcObject) return;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          useFallback();
+          return;
+        }
+        navigator.mediaDevices
+          .getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false })
+          .then((stream) => {
+            v.srcObject = stream;
+          })
+          .catch(() => useFallback());
+      }
+
+      function updateScreens() {
+        const id = navStack[navStack.length - 1];
+        const next = getScreenEl(id);
+        if (!next) return;
+        appScreens.querySelectorAll(".phone.is-active").forEach((p) => {
+          if (p !== next) {
+            dispose3d(p);
+            p.classList.remove("is-active");
+          }
+        });
+        next.classList.add("is-active");
+
+        if (id === "devices") {
+          renderDevices(lastSpecialty);
+        }
+        if (id === "mode-lab") {
+          const el = document.getElementById("modeLabTitle");
+          if (el) el.textContent = window.__labTitle || "الجهاز";
+        }
+        if (id === "ar-live") {
+          const t = document.getElementById("arLiveTitle");
+          if (t) t.textContent = (window.__labTitle || "الجهاز") + " — AR";
+        }
+        if (id.startsWith("train3d")) {
+          const m = window.__trainingModel || "oscilloscope";
+          applyTrainingPanels(m);
+          ["train3d1", "train3d2", "train3d3"].forEach((sid) => {
+            const sec = getScreenEl(sid);
+            const machine = sec && sec.querySelector(".machine");
+            if (machine) machine.setAttribute("data-device-3d", m);
+          });
+        }
+
+        init3d(next);
+        if (id === "ar-live") startARCameraFlow();
+        else stopARCameraFlow();
+      }
+
+      function goTo(screenId) {
+        navStack.push(screenId);
+        updateScreens();
+      }
+
+      function goBack() {
+        if (navStack.length <= 1) return;
+        navStack.pop();
+        updateScreens();
+      }
+
+      function handleScreenNavigate(e) {
+        if (e.target.closest("[data-nav-home]")) {
+          navStack = ["splash"];
+          updateScreens();
+          return;
+        }
+        if (e.target.closest("[data-nav-devices]")) {
+          navStack = ["splash", "specialty", "devices"];
+          updateScreens();
+          return;
+        }
+        if (e.target.closest(".nav-back, .ar-back")) {
+          goBack();
+          return;
+        }
+        const go = e.target.closest("[data-screen-go]");
+        if (go) {
+          const dest = go.getAttribute("data-screen-go");
+          if (dest === "devices") {
+            const sp = go.getAttribute("data-specialty");
+            if (sp) lastSpecialty = String(sp).trim();
+          }
+          if (dest === "mode-oscillo") {
+            window.__trainingModel = "oscilloscope";
+            window.__labTitle = "راسم الإشارة";
+          }
+          if (dest === "mode-lab") {
+            window.__trainingModel = go.getAttribute("data-lab-device") || "breadboard";
+            window.__labTitle = go.getAttribute("data-lab-title") || "الجهاز";
+          }
+          goTo(dest);
+        }
+      }
+
+      appScreens.addEventListener("click", handleScreenNavigate);
+
+      if (window.__labGuidePendingNav && Array.isArray(window.__labGuidePendingNav)) {
+        navStack = window.__labGuidePendingNav.slice();
+        delete window.__labGuidePendingNav;
+      }
+      window.__labGuideGoTo = goTo;
+
+      updateScreens();
+      })();
+    </script>
+  </body>
+</html>

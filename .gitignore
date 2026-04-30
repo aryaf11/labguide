@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Capacitor
+.capacitor/
+ios/
+
+# Build output
+dist/
+build/
+www-build/
+.cache/
+
+# Android build artifacts
+android/.gradle/
+android/build/
+android/app/build/
+android/app/release/
+android/local.properties
+android/captures/
+android/.idea/
+android/*.iml
+android/app/*.iml
+android/.cxx/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Auto-captured screenshots (regenerable)
+assets/screens/_*.png

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
+  <rect x="20" y="30" width="120" height="60" rx="4" fill="#00758f" stroke="#005a6e" stroke-width="2"/>
+  <rect x="30" y="40" width="40" height="40" rx="2" fill="#0c4a6e"/>
+  <text x="50" y="66" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="11" font-weight="700">MCU</text>
+  <g fill="#cbd5e1">
+    <rect x="88" y="44" width="6" height="32"/><rect x="98" y="44" width="6" height="32"/>
+    <rect x="108" y="44" width="6" height="32"/><rect x="118" y="44" width="6" height="32"/>
+  </g>
+  <rect x="26" y="96" width="108" height="8" rx="2" fill="#94a3b8"/>
+</svg>

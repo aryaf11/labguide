@@ -1,0 +1,23 @@
+{
+  "name": "labguide",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LabGuide — واجهات تدريب المختبر (Capacitor)",
+  "scripts": {
+    "dev": "npx sirv-cli www --port 3456 --single --host 127.0.0.1 --dev --no-etag",
+    "build": "node scripts/build.js",
+    "preview": "npx sirv-cli dist --port 4173 --single --host 127.0.0.1",
+    "capture:screens": "node scripts/capture-screens.js",
+    "sync": "npx cap sync",
+    "open:android": "npx cap open android",
+    "android": "npm run build && npx cap sync android && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0",
+    "three": "^0.160.0"
+  }
+}

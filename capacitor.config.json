@@ -1,0 +1,8 @@
+{
+  "appId": "com.labguide.app",
+  "appName": "LabGuide",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
